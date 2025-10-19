@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin Dashboard — Prototype</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="sidebar">
+      <div class="brand">Admin</div>
+      <nav>
+        <a href="#">Dashboard</a>
+        <a href="#requests">Requests</a>
+        <a href="#residents">Residents</a>
+        <a href="#announcements">Announcements</a>
+      </nav>
+    </aside>
+
+    <main class="admin-main">
+      <header class="admin-top">
+        <h1>Requests</h1>
+        <div class="admin-actions">
+          <button id="logoutAdmin" class="btn outline small">Logout</button>
+        </div>
+      </header>
+
+      <section id="requestsTable">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="requestsTbody"></tbody>
+        </table>
+      </section>
+    </main>
+  </div>
+
+  <script src="js/admin.js"></script>
+</body>
+</html>

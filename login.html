@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Login — Prototype</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header class="site-header small">
+    <div class="container header-inner">
+      <div class="brand">Prototype</div>
+      <nav class="nav">
+        <a href="index.html">Home</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container auth-page">
+    <div class="auth-card">
+      <h2>Resident Login</h2>
+      <form id="loginForm">
+        <label>Email or Username
+          <input type="text" id="username" required>
+        </label>
+        <label>Password
+          <input type="password" id="password" required>
+        </label>
+        <div class="auth-actions">
+          <button type="submit" class="btn">Login</button>
+          <a href="request.html" class="btn outline">Continue as Guest</a>
+        </div>
+      </form>
+      <p class="muted">Don't have an account? <a href="#">Register at the barangay hall</a></p>
+    </div>
+  </main>
+
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const uname = document.getElementById('username').value || 'guest';
+      localStorage.setItem('resident', JSON.stringify({ name: uname, email: uname + '@example.ph' }));
+      window.location.href = 'dashboard.html';
+    });
+  </script>
+</body>
+</html>
