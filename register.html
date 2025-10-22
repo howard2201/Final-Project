@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Register — Prototype</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header small">
+    <div class="container header-inner">
+      <div class="brand">Prototype</div>
+      <nav class="nav">
+        <a href="index.html">Home</a>
+        <a href="login.html" class="btn small outline">Login</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container auth-page">
+    <div class="auth-card">
+      <h2>Create an Account</h2>
+      <form id="registerForm">
+        <label>Full Name
+          <input type="text" id="fullName" required>
+        </label>
+        <label>Email
+          <input type="email" id="email" required>
+        </label>
+        <label>Username
+          <input type="text" id="username" required>
+        </label>
+        <label>Password
+          <input type="password" id="password" required>
+        </label>
+        <label>Confirm Password
+          <input type="password" id="confirmPassword" required>
+        </label>
+        <div class="auth-actions">
+          <button type="submit" class="btn">Register</button>
+          <a href="login.html" class="btn outline">Cancel</a>
+        </div>
+      </form>
+      <p class="muted">Already have an account? <a href="login.html" class="link">Login here</a></p>
+    </div>
+  </main>
+
+  <script>
+    document.getElementById('registerForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const name = document.getElementById('fullName').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const user = document.getElementById('username').value.trim();
+      const pass = document.getElementById('password').value;
+      const confirm = document.getElementById('confirmPassword').value;
+
+      if (!name || !email || !user || !pass) {
+        alert('Please fill out all fields.');
+        return;
+      }
+
+      if (pass !== confirm) {
+        alert('Passwords do not match.');
+        return;
+      }
+
+      const users = JSON.parse(localStorage.getItem('sb_users') || '[]');
+
+      if (users.some(u => u.username === user)) {
+        alert('Username already exists. Choose another.');
+        return;
+      }
+
+      users.push({ name, email, username: user, password: pass });
+      localStorage.setItem('sb_users', JSON.stringify(users));
+
+      alert('Registration successful! You can now log in.');
+      window.location.href = 'login.html';
+    });
+  </script>
+</body>
+</html>
