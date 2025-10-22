@@ -35,32 +35,39 @@
     </div>
   </main>
 
-  <script>
-    document.getElementById('loginForm').addEventListener('submit', function(e) {
-      e.preventDefault();
+<script>
+  document.getElementById('loginForm').addEventListener('submit', function(e) {
+    e.preventDefault();
 
-      const username = document.getElementById('username').value.trim();
-      const password = document.getElementById('password').value.trim();
-      const users = JSON.parse(localStorage.getItem('sb_users') || '[]');
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value.trim();
 
-      const user = users.find(u =>
-        (u.username === username || u.email === username) && u.password === password
-      );
+    if (username === 'admin' && password === '12345') {
+      alert('Welcome, Admin!');
+      localStorage.setItem('admin', JSON.stringify({ user: 'admin' }));
+      window.location.href = 'admin.html';
+      return;
+    }
 
-      if (!user) {
-        alert('Invalid credentials. Please try again or register first.');
-        return;
-      }
+    const users = JSON.parse(localStorage.getItem('sb_users') || '[]');
+    const user = users.find(u =>
+      (u.username === username || u.email === username) && u.password === password
+    );
 
-      localStorage.setItem('resident', JSON.stringify({
-        name: user.name,
-        email: user.email,
-        username: user.username
-      }));
+    if (!user) {
+      alert('Invalid credentials. Please try again or register first.');
+      return;
+    }
 
-      alert('Login successful! Welcome ' + user.name);
-      window.location.href = 'dashboard.html';
-    });
-  </script>
+    localStorage.setItem('resident', JSON.stringify({
+      name: user.name,
+      email: user.email,
+      username: user.username
+    }));
+
+    alert('Login successful! Welcome ' + user.name);
+    window.location.href = 'dashboard.html';
+  });
+</script>
 </body>
 </html>

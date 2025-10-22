@@ -236,3 +236,18 @@ table td {
     display: none;
   }
 }
+.sidebar nav a {
+  display: block;
+  padding: 0.6rem 1rem;
+  color: #111;
+  text-decoration: none;
+  border-radius: 6px;
+  transition: 0.2s;
+}
+.sidebar nav a:hover {
+  background: var(--primary);
+  color: #fff;
+}
+.sidebar-links {
+  padding-top: 20px;
+}
