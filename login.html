@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Login — Prototype</title>
-  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
   <header class="site-header small">
@@ -31,15 +31,34 @@
           <a href="request.html" class="btn outline">Continue as Guest</a>
         </div>
       </form>
-      <p class="muted">Don't have an account? <a href="#">Register at the barangay hall</a></p>
+      <p class="muted">Don't have an account? <a href="register.html" class="link">Register here</a></p>
     </div>
   </main>
 
   <script>
     document.getElementById('loginForm').addEventListener('submit', function(e) {
       e.preventDefault();
-      const uname = document.getElementById('username').value || 'guest';
-      localStorage.setItem('resident', JSON.stringify({ name: uname, email: uname + '@example.ph' }));
+
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const users = JSON.parse(localStorage.getItem('sb_users') || '[]');
+
+      const user = users.find(u =>
+        (u.username === username || u.email === username) && u.password === password
+      );
+
+      if (!user) {
+        alert('Invalid credentials. Please try again or register first.');
+        return;
+      }
+
+      localStorage.setItem('resident', JSON.stringify({
+        name: user.name,
+        email: user.email,
+        username: user.username
+      }));
+
+      alert('Login successful! Welcome ' + user.name);
       window.location.href = 'dashboard.html';
     });
   </script>
