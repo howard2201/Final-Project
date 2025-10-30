@@ -71,6 +71,8 @@ if (requestForm) {
       <p><strong>Name:</strong> ${document.getElementById('fullName').value}</p>
       <p><strong>Request:</strong> ${document.getElementById('requestType').value}</p>
       <p><strong>Details:</strong> ${document.getElementById('details').value}</p>
+      <p><strong>Uploaded ID:</strong> ${document.getElementById('uploadId').value.split('\\').pop()}</p>
+      <p><strong>Residency Certificate:</strong> ${document.getElementById('uploadResidency').value.split('\\').pop()}</p>
     `;
     step = 3;
     showStep(step);
@@ -86,7 +88,9 @@ if (requestForm) {
       name: document.getElementById('fullName').value,
       type: document.getElementById('requestType').value,
       status: 'Pending',
-      details: document.getElementById('details').value
+      details: document.getElementById('details').value,
+      idFile: document.getElementById('uploadId').value.split('\\').pop(),
+      residencyFile: document.getElementById('uploadResidency').value.split('\\').pop()
     };
     reqs.push(newReq);
     localStorage.setItem('sb_requests', JSON.stringify(reqs));

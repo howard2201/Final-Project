@@ -3,103 +3,96 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Register — Prototype</title>
-  <link rel="stylesheet" href="css/styling.css">
+  <title>Request Document — Prototype</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
   <header class="site-header small">
     <div class="container header-inner">
       <div class="brand">Prototype</div>
       <nav class="nav">
-        <a href="index.html">Home</a>
-        <a href="login.html" class="btn small outline">Login</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="index.html" id="logoutBtn" class="btn small outline">Logout</a>
       </nav>
     </div>
   </header>
 
-  <main class="container auth-page">
-    <div class="auth-card">
-      <h2>Create an Account</h2>
-      <form id="registerForm">
+  <main class="container">
+    <h2>Request a Document</h2>
+    <div class="progress">
+      <div id="progressBar" class="progress-bar"></div>
+    </div>
+
+    <form id="requestForm" class="form-card">
+
+      <div class="step" data-step="1">
         <label>Full Name
           <input type="text" id="fullName" required>
         </label>
-        <label>Email
-          <input type="email" id="email" required>
+        <br><br>
+
+        <label>Type of Request
+          <select id="requestType" required>
+            <option value="">-- Select Document Type --</option>
+            <option value="Barangay Certificate">Barangay Certificate</option>
+            <option value="Barangay Clearance">Barangay Clearance</option>
+            <option value="Business Permits and Licenses">Business Permits and Licenses</option>
+            <option value="Applying for a Passport">Applying for a Passport</option>
+            <option value="Clearance Certificates">Clearance Certificates</option>
+            <option value="Employment">Employment</option>
+            <option value="Government Documents Application">Government Documents Application</option>
+            <option value="Identification">Identification</option>
+            <option value="Proof of Address">Proof of Address</option>
+          </select>
         </label>
-        <label>Username
-          <input type="text" id="username" required>
-        </label>
-        <label>Password
-          <input type="password" id="password" required>
-        </label>
-        <label>Confirm Password
-          <input type="password" id="confirmPassword" required>
-        </label>
+        <br><br>
 
         <label>Upload Valid ID (Required)
-          <input type="file" id="registerId" accept=".jpg,.jpeg,.png,.pdf" required>
+          <input type="file" id="uploadId" accept=".jpg,.jpeg,.png,.pdf" required>
         </label>
-        <label>Upload Proof of Residency (Required)
-          <input type="file" id="registerProof" accept=".jpg,.jpeg,.png,.pdf" required>
+        <br><br>
+
+        <label>Barangay Certificate of Residency (Required)
+          <input type="file" id="uploadResidency" accept=".jpg,.jpeg,.png,.pdf" required>
+        </label>
+        <br><br>
+
+        <div class="actions">
+          <button type="button" id="next1" class="btn">Next</button>
+        </div>
+      </div>
+
+      <div class="step" data-step="2" style="display:none;">
+        <label>Additional Details
+          <textarea id="details" rows="4" placeholder="Add details about your request..." required></textarea>
         </label>
 
-        <div class="auth-actions">
-          <button type="submit" class="btn">Register</button>
-          <a href="login.html" class="btn outline">Cancel</a>
+        <div class="actions">
+          <button type="button" id="back2" class="btn outline">Back</button>
+          <button type="button" id="next2" class="btn">Next</button>
         </div>
-      </form>
-      <p class="muted">Already have an account? <a href="login.html" class="link">Login here</a></p>
-    </div>
+      </div>
+
+      <div class="step" data-step="3" style="display:none;">
+        <div id="summary"></div>
+        <div class="actions">
+          <button type="button" id="back3" class="btn outline">Back</button>
+          <button type="submit" class="btn">Submit Request</button>
+        </div>
+      </div>
+    </form>
   </main>
 
+  <footer class="site-footer small">
+    <div class="container">
+      <p class="copyright">© <span id="year2"></span> Prototype</p>
+    </div>
+  </footer>
+
+  <script src="js/app.js"></script>
   <script>
-    document.getElementById('registerForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-
-      const name = document.getElementById('fullName').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const user = document.getElementById('username').value.trim();
-      const pass = document.getElementById('password').value;
-      const confirm = document.getElementById('confirmPassword').value;
-      const idFile = document.getElementById('registerId').files[0];
-      const proofFile = document.getElementById('registerProof').files[0];
-
-      if (!name || !email || !user || !pass || !confirm) {
-        alert('Please fill out all fields.');
-        return;
-      }
-
-      if (pass !== confirm) {
-        alert('Passwords do not match.');
-        return;
-      }
-
-      if (!idFile || !proofFile) {
-        alert('Please upload all required documents.');
-        return;
-      }
-
-      const users = JSON.parse(localStorage.getItem('sb_users') || '[]');
-
-      if (users.some(u => u.username === user)) {
-        alert('Username already exists. Choose another.');
-        return;
-      }
-
-      users.push({ 
-        name, 
-        email, 
-        username: user, 
-        password: pass, 
-        idUploaded: idFile.name, 
-        proofUploaded: proofFile.name 
-      });
-
-      localStorage.setItem('sb_users', JSON.stringify(users));
-
-      alert('Registration successful! You can now log in.');
-      window.location.href = 'login.html';
+    document.getElementById('logoutBtn').addEventListener('click', function() {
+      localStorage.removeItem('resident');
     });
   </script>
 </body>
