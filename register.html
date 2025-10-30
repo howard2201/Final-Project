@@ -36,6 +36,14 @@
         <label>Confirm Password
           <input type="password" id="confirmPassword" required>
         </label>
+
+        <label>Upload Valid ID (Required)
+          <input type="file" id="registerId" accept=".jpg,.jpeg,.png,.pdf" required>
+        </label>
+        <label>Upload Proof of Residency (Required)
+          <input type="file" id="registerProof" accept=".jpg,.jpeg,.png,.pdf" required>
+        </label>
+
         <div class="auth-actions">
           <button type="submit" class="btn">Register</button>
           <a href="login.html" class="btn outline">Cancel</a>
@@ -54,14 +62,21 @@
       const user = document.getElementById('username').value.trim();
       const pass = document.getElementById('password').value;
       const confirm = document.getElementById('confirmPassword').value;
+      const idFile = document.getElementById('registerId').files[0];
+      const proofFile = document.getElementById('registerProof').files[0];
 
-      if (!name || !email || !user || !pass) {
+      if (!name || !email || !user || !pass || !confirm) {
         alert('Please fill out all fields.');
         return;
       }
 
       if (pass !== confirm) {
         alert('Passwords do not match.');
+        return;
+      }
+
+      if (!idFile || !proofFile) {
+        alert('Please upload all required documents.');
         return;
       }
 
@@ -72,7 +87,15 @@
         return;
       }
 
-      users.push({ name, email, username: user, password: pass });
+      users.push({ 
+        name, 
+        email, 
+        username: user, 
+        password: pass, 
+        idUploaded: idFile.name, 
+        proofUploaded: proofFile.name 
+      });
+
       localStorage.setItem('sb_users', JSON.stringify(users));
 
       alert('Registration successful! You can now log in.');

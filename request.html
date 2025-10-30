@@ -24,12 +24,14 @@
       </div>
 
       <form id="requestForm">
+        
         <div class="step" data-step="1">
           <label>Full Name
             <input type="text" id="fullName" required>
           </label>
           <label>Type of Request
-            <select id="requestType">
+            <select id="requestType" required>
+              <option value="">Select Request Type</option>
               <option>Barangay Clearance</option>
               <option>Indigency Certificate</option>
               <option>Business Permit</option>
@@ -40,24 +42,33 @@
           </div>
         </div>
 
+        
         <div class="step" data-step="2" style="display:none">
           <label>Purpose / Details
-            <textarea id="details" rows="4"></textarea>
+            <textarea id="details" rows="4" required></textarea>
           </label>
-          <br><br>
-          <label>Upload ID (Required)
-            <input type="file" id="uploadId">
-          <br><br>
+
+          <br>
+          <br>  
+
+          <label>Upload Valid ID (Required)
+            <input type="file" id="uploadId" accept=".jpg,.jpeg,.png,.pdf" required>
           </label>
-          <label> Barangay Certificate of Residency (Required)
-            <input type="file" id="uploadId">
+
+          <br>
+          <br>
+
+          <label>Barangay Certificate of Residency (Required)
+            <input type="file" id="uploadResidency" accept=".jpg,.jpeg,.png,.pdf" required>
           </label>
+
           <div class="actions">
             <button type="button" id="back2" class="btn outline">Back</button>
             <button type="button" id="next2" class="btn">Next</button>
           </div>
         </div>
 
+        
         <div class="step" data-step="3" style="display:none">
           <h4>Confirm Request</h4>
           <div id="summary"></div>
