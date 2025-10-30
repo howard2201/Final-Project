@@ -254,3 +254,28 @@ table td {
 loginbtns{
   padding: 200px;
 }
+.scroll-cards {
+  display: flex;
+  overflow-x: auto;
+  gap: 1rem;
+  padding: 1rem 0;
+  scroll-snap-type: x mandatory;
+}
+
+.scroll-cards .card {
+  flex: 0 0 280px;
+  scroll-snap-align: start;
+  background: var(--card);
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 3px 8px rgba(15, 23, 42, 0.05);
+}
+
+.scroll-cards::-webkit-scrollbar {
+  height: 8px;
+}
+
+.scroll-cards::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 4px;
+}
