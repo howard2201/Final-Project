@@ -84,9 +84,34 @@
           <p>Request documents proving your official address within the barangay.</p>
         </div>
       </div>
-
     </section>
+
+
+    <section class="history-section container">
+      <h2>About Our Barangay</h2>
+      <button id="openHistory" class="btn outline">View Barangay History</button>
+    </section>
+
   </main>
+
+  <div id="historyModal" class="modal">
+    <div class="modal-content">
+      <span id="closeHistory" class="close">&times;</span>
+      <h2>Barangay History</h2>
+      <p>
+        “Banaba” was established in 1883, a small barrio, 1/2 miles away from Taal Lake and the enthralling 
+        “Ramandan Falls”. In ancient times, natives here built a “pandayan” – 
+        a craft with expertise in metal carvings and furniture making using irons as their source of livelihood. 
+        In 1867 – 1869, there was an increase in the number of coffee growers as they opted to plant coffee as their major source of living. 
+        However, in dry seasons, natives were forced to evacuate to the nearby plains called 
+        “Nueva Villa” which was later renamed to “Bagong Pook” and currently houses Nestle Philippines, Inc., 
+        the first food industry in Lipa City.
+        <img src="assets/img/brgy-info.png" alt="info" width="500">
+        <img src="assets/img/brgy-info2.png" alt="info" width="500">
+
+      </p>
+    </div>
+  </div>
 
   <footer class="site-footer">
     <div class="container">
@@ -106,5 +131,17 @@
   </footer>
 
   <script src="js/app.js"></script>
+
+  <script>
+    const modal = document.getElementById('historyModal');
+    const openBtn = document.getElementById('openHistory');
+    const closeBtn = document.getElementById('closeHistory');
+
+    openBtn.addEventListener('click', () => modal.style.display = 'flex');
+    closeBtn.addEventListener('click', () => modal.style.display = 'none');
+    window.addEventListener('click', e => {
+      if (e.target === modal) modal.style.display = 'none';
+    });
+  </script>
 </body>
 </html>
