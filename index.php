@@ -11,10 +11,10 @@
     <div class="container header-inner">
       <div class="brand">Smart Brgy System</div>
       <nav class="nav">
-        <a href="index.html">Home</a>
-        <a href="request.html">Services</a>
-        <a href="announcements.html">Announcements</a>
-        <a href="login.html" class="btn small">Login</a>
+        <a href="index.php">Home</a>
+        <a href="requests/RequestForm.php">Services</a>
+        <a href="announcements/AnnouncementsList.php">Announcements</a>
+        <a href="residents/Login.php" class="btn small">Login</a>
       </nav>
     </div>
   </header>
@@ -26,8 +26,8 @@
           <h1>Faster, easier barangay services</h1>
           <p>Request certificates, track submissions, and get announcements — all online.</p>
           <div class="hero-actions">
-            <a href="request.html" class="btn">Request a Document</a>
-            <a href="login.html" class="btn outline">Resident Login</a>
+            <a href="requests/RequestForm.php" class="btn">Request a Document</a>
+            <a href="residents/Login.php" class="btn outline">Resident Login</a>
           </div>
         </div>
         <div class="hero-image">
@@ -43,42 +43,34 @@
           <h3>Barangay Certificate</h3>
           <p>Request an official document verifying your residency within the barangay.</p>
         </div>
-
         <div class="card">
           <h3>Barangay Clearance</h3>
           <p>Apply for a barangay clearance for employment, business, or personal use.</p>
         </div>
-
         <div class="card">
           <h3>Business Permits and Licenses</h3>
           <p>Submit requirements for business permits and renew existing licenses.</p>
         </div>
-
         <div class="card">
           <h3>Applying for a Passport</h3>
           <p>Get barangay certification support for passport application requirements.</p>
         </div>
-
         <div class="card">
           <h3>Clearance Certificates</h3>
           <p>Request barangay-issued clearances for various official purposes.</p>
         </div>
-
         <div class="card">
           <h3>Employment</h3>
           <p>Obtain barangay documents needed for job applications or verification.</p>
         </div>
-
         <div class="card">
           <h3>Government Documents Application</h3>
           <p>Assistance in securing NBI, Police, or Birth Certificates at the barangay level.</p>
         </div>
-
         <div class="card">
           <h3>Identification</h3>
           <p>Apply for a barangay ID or request verification for lost or new IDs.</p>
         </div>
-
         <div class="card">
           <h3>Proof of Address</h3>
           <p>Request documents proving your official address within the barangay.</p>
@@ -86,12 +78,10 @@
       </div>
     </section>
 
-
     <section class="history-section container">
       <h2>About Our Barangay</h2>
       <button id="openHistory" class="btn outline">View Barangay History</button>
     </section>
-
   </main>
 
   <div id="historyModal" class="modal">
@@ -108,7 +98,6 @@
         the first food industry in Lipa City.
         <img src="assets/img/brgy-info.png" alt="info" width="500">
         <img src="assets/img/brgy-info2.png" alt="info" width="500">
-
       </p>
     </div>
   </div>
@@ -131,17 +120,5 @@
   </footer>
 
   <script src="js/app.js"></script>
-
-  <script>
-    const modal = document.getElementById('historyModal');
-    const openBtn = document.getElementById('openHistory');
-    const closeBtn = document.getElementById('closeHistory');
-
-    openBtn.addEventListener('click', () => modal.style.display = 'flex');
-    closeBtn.addEventListener('click', () => modal.style.display = 'none');
-    window.addEventListener('click', e => {
-      if (e.target === modal) modal.style.display = 'none';
-    });
-  </script>
 </body>
 </html>
