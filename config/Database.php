@@ -6,26 +6,19 @@ class Database {
     private $password = "";
     public $conn;
 
-    public function __construct() {
-        $this->connect();
-    }
-
     public function connect() {
         $this->conn = null;
         try {
             $this->conn = new PDO(
-                "mysql:host={$this->host};dbname={$this->db_name};charset=utf8",
-                $this->username,
+                "mysql:host=" . $this->host . ";dbname=" . $this->db_name, 
+                $this->username, 
                 $this->password
             );
-            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $this->conn->exec("set names utf8");
         } catch(PDOException $e) {
-            die("Database connection failed: " . $e->getMessage());
+            echo "Connection Error: " . $e->getMessage();
+            exit;
         }
-    }
-
-    public function getConnection() {
         return $this->conn;
     }
 }
-?>

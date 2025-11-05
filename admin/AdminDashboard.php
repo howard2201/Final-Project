@@ -1,24 +1,23 @@
 <?php
-require_once 'Admin.php';
-require_once '../requests/Request.php';
 session_start();
-if(!isset($_SESSION['admin_id'])) header('Location: AdminLogin.php');
+require_once "Admin.php";
+if(!isset($_SESSION['admin_id'])) header("Location: ../index.php");
 
-$request = new Request();
-$requests = $request->getAll();
+$admin = new Admin();
+$requests = $admin->getRequests();
 
-if(isset($_GET['action']) && isset($_GET['id'])) {
-    $request->updateStatus($_GET['id'], $_GET['action']);
-    header('Location: AdminDashboard.php');
+if(isset($_POST['update_status'])){
+    $admin->updateRequestStatus($_POST['request_id'], $_POST['status']);
+    header("Location: AdminDashboard.php");
     exit;
 }
 ?>
 
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<title>Admin Dashboard — Prototype</title>
+<meta charset="UTF-8">
+<title>Admin Dashboard</title>
 <link rel="stylesheet" href="../css/styling.css">
 </head>
 <body>
@@ -27,7 +26,7 @@ if(isset($_GET['action']) && isset($_GET['id'])) {
 <div class="brand">Admin</div>
 <nav>
 <div class="sidebar-links">
-<a href="#">Dashboard</a>
+<a href="AdminDashboard.php">Dashboard</a>
 <a href="#requests">Requests</a>
 </div>
 </nav>
@@ -37,30 +36,37 @@ if(isset($_GET['action']) && isset($_GET['id'])) {
 <header class="admin-top">
 <h1>Requests</h1>
 <div class="admin-actions">
-<a href="Logout.php" class="btn outline small">Logout</a>
+<a href="../logout.php" class="btn outline small">Logout</a>
 </div>
 </header>
 
 <section id="requestsTable">
 <table>
 <thead>
-<tr>
-<th>ID</th><th>Name</th><th>Type</th><th>Status</th><th>Action</th>
-</tr>
+<tr><th>ID</th><th>Name</th><th>Type</th><th>Status</th><th>Action</th></tr>
 </thead>
 <tbody>
-<?php foreach($requests as $r): ?>
-<tr>
-<td><?= $r['id'] ?></td>
-<td><?= $r['full_name'] ?></td>
-<td><?= $r['type'] ?></td>
-<td><?= $r['status'] ?></td>
-<td>
-<a class="btn" href="?action=Approved&id=<?= $r['id'] ?>">Approve</a>
-<a class="btn outline" href="?action=Rejected&id=<?= $r['id'] ?>">Reject</a>
-</td>
-</tr>
-<?php endforeach; ?>
+<?php
+if($requests){
+    foreach($requests as $r){
+        echo "<tr>
+        <td>{$r['id']}</td>
+        <td>{$r['full_name']}</td>
+        <td>{$r['type']}</td>
+        <td>{$r['status']}</td>
+        <td>
+        <form method='POST' style='display:inline'>
+            <input type='hidden' name='request_id' value='{$r['id']}'>
+            <button name='status' value='Approved' class='btn'>Approve</button>
+            <button name='status' value='Rejected' class='btn outline'>Reject</button>
+        </form>
+        </td>
+        </tr>";
+    }
+} else {
+    echo "<tr><td colspan='5' class='muted'>No requests found.</td></tr>";
+}
+?>
 </tbody>
 </table>
 </section>

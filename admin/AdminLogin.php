@@ -1,15 +1,18 @@
 <?php
-require_once 'Admin.php';
 session_start();
+require_once "Admin.php";
 
-if($_SERVER['REQUEST_METHOD'] === 'POST') {
+$admin = new Admin();
+
+if($_SERVER['REQUEST_METHOD'] === 'POST'){
     $email = $_POST['email'];
     $password = $_POST['password'];
-    $admin = new Admin();
-    $res = $admin->login($email, $password);
-    if($res) {
-        $_SESSION['admin_id'] = $res['id'];
-        header('Location: AdminDashboard.php');
+    $user = $admin->login($email, $password);
+
+    if($user){
+        $_SESSION['admin_id'] = $user['id'];
+        $_SESSION['admin_name'] = $user['full_name'];
+        header("Location: AdminDashboard.php");
         exit;
     } else {
         $error = "Invalid credentials";
@@ -17,24 +20,22 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<title>Admin Login — Prototype</title>
+<meta charset="UTF-8">
+<title>Admin Login</title>
 <link rel="stylesheet" href="../css/styling.css">
 </head>
 <body>
-<div class="auth-card container">
+<div class="auth-card">
 <h2>Admin Login</h2>
+<?php if(isset($error)) echo "<p style='color:red'>$error</p>"; ?>
 <form method="POST">
-<label>Email<input type="email" name="email" required></label>
-<label>Password<input type="password" name="password" required></label>
-<div class="auth-actions">
-<button type="submit" class="btn">Login</button>
-</div>
+    <label>Email<input type="email" name="email" required></label>
+    <label>Password<input type="password" name="password" required></label>
+    <button type="submit" class="btn">Login</button>
 </form>
-<?php if(isset($error)) echo "<p class='muted'>$error</p>"; ?>
 </div>
 </body>
 </html>

@@ -6,12 +6,12 @@ class Request {
 
     public function __construct() {
         $db = new Database();
-        $this->conn = $db->getConnection();
+        $this->conn = $db->connect();
     }
 
     public function create($resident_id, $type, $details, $id_file, $residency_file) {
-        $stmt = $this->conn->prepare("INSERT INTO requests (resident_id,type,details,id_file,residency_file,status) VALUES (?,?,?,?,?,?)");
-        $stmt->execute([$resident_id, $type, $details, $id_file, $residency_file, 'Pending']);
+        $stmt = $this->conn->prepare("INSERT INTO requests (resident_id,type,details,id_file,residency_file,status,created_at) VALUES (?,?,?,?,?, 'Pending', NOW())");
+        $stmt->execute([$resident_id, $type, $details, $id_file, $residency_file]);
         return $this->conn->lastInsertId();
     }
 
