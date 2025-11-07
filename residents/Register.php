@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Register — Prototype</title>
-  <link rel="stylesheet" href="../css/styling.css">
+  <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
 <?php include '../includes/headerinner.php'; ?>

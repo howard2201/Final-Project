@@ -7,7 +7,7 @@ session_start();
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Smart Brgy System — Home</title>
-  <link rel="stylesheet" href="css/styling.css">
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
@@ -20,11 +20,14 @@ session_start();
           <h1>Faster, easier barangay services</h1>
           <p>Request certificates, track submissions, and get announcements — all online.</p>
           <div class="hero-actions">
-            <?php if(isset($_SESSION['resident_id'])): ?>
-              <a href="requests/RequestForm.php" class="btn">Request a Document</a>
-            <?php else: ?>
-              <a href="residents/Login.php" class="btn outline">Resident Login</a>
-            <?php endif; ?>
+            <?php
+              if (isset($_SESSION['resident_id'])) {
+                echo '<a href="requests/RequestForm.php" class="btn">Request a Document</a>';
+              }
+              if (!isset($_SESSION['resident_id'])) {
+                echo '<a href="residents/Login.php" class="btn outline">Resident Login</a>';
+              }
+            ?>
           </div>
         </div>
         <div class="hero-image">
@@ -101,6 +104,6 @@ session_start();
 
 <?php include 'includes/footer.php'; ?>
 
-<script src="js/app.js"></script>
+<script src="js/appear.js"></script>
 </body>
 </html>

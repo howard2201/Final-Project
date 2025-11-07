@@ -10,9 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
     steps.forEach((step, i) => {
       step.style.display = i === index ? "block" : "none";
     });
-    if (progressBar) {
-      progressBar.style.width = `${((index + 1) / steps.length) * 100}%`;
-    }
+    if (progressBar) progressBar.style.width = `${((index + 1) / steps.length) * 100}%`;
   }
 
   const next1 = document.getElementById("next1");
@@ -22,35 +20,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const summary = document.getElementById("summary");
   const form = document.getElementById("requestForm");
 
-  if (next1) {
-    next1.addEventListener("click", () => {
-      currentStep = 1;
-      showStep(currentStep);
-    });
-  }
-
-  if (next2) {
-    next2.addEventListener("click", () => {
-      const requestType = form.requestType.value;
-      const details = form.details.value;
-      summary.innerHTML = `
-        <p><strong>Request Type:</strong> ${requestType}</p>
-        <p><strong>Details:</strong> ${details}</p>
-      `;
-      currentStep = 2;
-      showStep(currentStep);
-    });
-  }
-
-  if (back2) back2.addEventListener("click", () => {
-    currentStep = 0;
+  if (next1) next1.addEventListener("click", () => { currentStep = 1; showStep(currentStep); });
+  if (next2) next2.addEventListener("click", () => {
+    const requestType = form.requestType.value;
+    const details = form.details.value;
+    summary.innerHTML = `<p><strong>Request Type:</strong> ${requestType}</p>
+                         <p><strong>Details:</strong> ${details}</p>`;
+    currentStep = 2;
     showStep(currentStep);
   });
-
-  if (back3) back3.addEventListener("click", () => {
-    currentStep = 1;
-    showStep(currentStep);
-  });
+  if (back2) back2.addEventListener("click", () => { currentStep = 0; showStep(currentStep); });
+  if (back3) back3.addEventListener("click", () => { currentStep = 1; showStep(currentStep); });
 
   const modals = document.querySelectorAll(".modal");
   const closeBtns = document.querySelectorAll(".close");
@@ -61,11 +41,11 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  window.onclick = e => {
+  window.addEventListener("click", e => {
     modals.forEach(modal => {
       if (e.target === modal) modal.style.display = "none";
     });
-  };
+  });
 
   const scrollCards = document.querySelector(".scroll-cards");
   if (scrollCards) {
@@ -75,12 +55,17 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  const historyBtn = document.getElementById("openHistory");
+  const openHistoryBtn = document.getElementById("openHistory");
   const historyModal = document.getElementById("historyModal");
+  const closeHistoryBtn = document.getElementById("closeHistory");
 
-  if (historyBtn && historyModal) {
-    historyBtn.addEventListener("click", () => {
+  if (openHistoryBtn && historyModal && closeHistoryBtn) {
+    openHistoryBtn.addEventListener("click", () => {
       historyModal.style.display = "flex";
+    });
+
+    closeHistoryBtn.addEventListener("click", () => {
+      historyModal.style.display = "none";
     });
   }
 

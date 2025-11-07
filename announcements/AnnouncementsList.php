@@ -14,7 +14,7 @@ $announcements = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <head>
 <meta charset="UTF-8">
 <title>Announcements</title>
-<link rel="stylesheet" href="../css/styling.css">
+<link rel="stylesheet" href="../css/styli.css">
 </head>
 <body>
 <?php include '../includes/headerinner.php'; ?>
@@ -36,7 +36,7 @@ if($announcements){
 ?>
 </div>
 </main>
-<script src="../js/app.js"></script>
+<script src="../js/appear.js"></script>
 
 <?php include '../includes/footer.php'; ?>
 </body>

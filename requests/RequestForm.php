@@ -43,7 +43,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
 <head>
 <meta charset="UTF-8">
 <title>Request Service</title>
-<link rel="stylesheet" href="../css/styling.css">
+<link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
 
@@ -102,7 +102,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
 </div>
 </main>
 
-<script src="../js/app.js"></script>
+<script src="../js/appear.js"></script>
 <script>
 let step = 1;
 const steps = document.querySelectorAll('.step');

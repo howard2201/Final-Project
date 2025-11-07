@@ -18,7 +18,7 @@ if(isset($_POST['update_status'])){
 <head>
 <meta charset="UTF-8">
 <title>Admin Dashboard</title>
-<link rel="stylesheet" href="../css/styling.css">
+<link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
 <div class="admin-layout">
