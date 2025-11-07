@@ -1,3 +1,6 @@
+<?php 
+session_start();
+?>
 <!doctype html>
 <html lang="en">
 <head>
@@ -7,27 +10,21 @@
   <link rel="stylesheet" href="css/styling.css">
 </head>
 <body>
-  <header class="site-header">
-    <div class="container header-inner">
-      <div class="brand">Smart Brgy System</div>
-      <nav class="nav">
-        <a href="index.php">Home</a>
-        <a href="requests/RequestForm.php">Services</a>
-        <a href="announcements/AnnouncementsList.php">Announcements</a>
-        <a href="residents/Login.php" class="btn small">Login</a>
-      </nav>
-    </div>
-  </header>
 
-  <main>
+<?php include 'includes/header.php'; ?>
+
+<main>
     <section class="hero">
       <div class="container hero-inner">
         <div class="hero-copy">
           <h1>Faster, easier barangay services</h1>
           <p>Request certificates, track submissions, and get announcements — all online.</p>
           <div class="hero-actions">
-            <a href="requests/RequestForm.php" class="btn">Request a Document</a>
-            <a href="residents/Login.php" class="btn outline">Resident Login</a>
+            <?php if(isset($_SESSION['resident_id'])): ?>
+              <a href="requests/RequestForm.php" class="btn">Request a Document</a>
+            <?php else: ?>
+              <a href="residents/Login.php" class="btn outline">Resident Login</a>
+            <?php endif; ?>
           </div>
         </div>
         <div class="hero-image">
@@ -82,9 +79,9 @@
       <h2>About Our Barangay</h2>
       <button id="openHistory" class="btn outline">View Barangay History</button>
     </section>
-  </main>
+</main>
 
-  <div id="historyModal" class="modal">
+<div id="historyModal" class="modal">
     <div class="modal-content">
       <span id="closeHistory" class="close">&times;</span>
       <h2>Barangay History</h2>
@@ -100,25 +97,10 @@
         <img src="assets/img/brgy-info2.png" alt="info" width="500">
       </p>
     </div>
-  </div>
+</div>
 
-  <footer class="site-footer">
-    <div class="container">
-      <div class="footer-grid">
-        <div>
-          <h4>Smart Brgy System</h4>
-          <p>Lipa City, Batangas</p>
-        </div>
-        <div>
-          <h4>Contact</h4>
-          <p>Email: barangay@example.ph</p>
-          <p>Phone: (+63) 912-345-6789</p>
-        </div>
-      </div>
-      <p class="copyright">© <span id="year"></span> Prototype — All rights reserved.</p>
-    </div>
-  </footer>
+<?php include 'includes/footer.php'; ?>
 
-  <script src="js/app.js"></script>
+<script src="js/app.js"></script>
 </body>
 </html>

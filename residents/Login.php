@@ -11,6 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $resident = $residentClass->login($email, $password);
     if ($resident) {
         $_SESSION['resident_id'] = $resident['id'];
+        $_SESSION['resident_name'] = $resident['full_name'];
         header('Location: Dashboard.php');
         exit;
     } else {
@@ -27,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <link rel="stylesheet" href="../css/styling.css">
 </head>
 <body>
-<?php include '../includes/header.php'; ?>
+<?php include '../includes/headerinner.php'; ?>
 
 <main class="container auth-page">
   <div class="auth-card">

@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", () => { 
   const yearEls = document.querySelectorAll("#year, #year2");
   yearEls.forEach(el => el.textContent = new Date().getFullYear());
 
@@ -10,7 +10,9 @@ document.addEventListener("DOMContentLoaded", () => {
     steps.forEach((step, i) => {
       step.style.display = i === index ? "block" : "none";
     });
-    progressBar.style.width = `${((index + 1) / steps.length) * 100}%`;
+    if (progressBar) {
+      progressBar.style.width = `${((index + 1) / steps.length) * 100}%`;
+    }
   }
 
   const next1 = document.getElementById("next1");
@@ -70,6 +72,15 @@ document.addEventListener("DOMContentLoaded", () => {
     scrollCards.addEventListener("wheel", e => {
       e.preventDefault();
       scrollCards.scrollLeft += e.deltaY;
+    });
+  }
+
+  const historyBtn = document.getElementById("openHistory");
+  const historyModal = document.getElementById("historyModal");
+
+  if (historyBtn && historyModal) {
+    historyBtn.addEventListener("click", () => {
+      historyModal.style.display = "flex";
     });
   }
 

@@ -46,6 +46,9 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
 <link rel="stylesheet" href="../css/styling.css">
 </head>
 <body>
+
+<?php include '../includes/headerinner.php'; ?>
+
 <main class="container request-page">
 <div class="card form-card">
 <h2>Request a Document</h2>
@@ -109,5 +112,7 @@ const showStep = n => {
 document.getElementById('next1').onclick = ()=>{step=2; showStep(step);}
 document.getElementById('back2').onclick = ()=>{step=1; showStep(step);}
 </script>
+
+<?php include '../includes/footer.php'; ?>
 </body>
 </html>

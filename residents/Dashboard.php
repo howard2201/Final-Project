@@ -15,17 +15,7 @@ $requests = $resident->getRequests($_SESSION['resident_id']);
 <link rel="stylesheet" href="../css/styling.css">
 </head>
 <body>
-<header class="site-header">
-<div class="container header-inner">
-<div class="brand">Prototype</div>
-<nav class="nav">
-<a href="Dashboard.php">Dashboard</a>
-<a href="../requests/RequestForm.php">Request</a>
-<a href="../announcements/AnnouncementsList.php">Announcements</a>
-<a href="../logout.php" class="btn small outline">Logout</a>
-</nav>
-</div>
-</header>
+<?php include '../includes/headerinner.php'; ?>
 
 <main class="container dashboard">
 <h2>Welcome, <?php echo $_SESSION['resident_name']; ?></h2>
@@ -48,5 +38,7 @@ if(count($requests)){
 ?>
 </div>
 </main>
+
+<?php include '../includes/footer.php'; ?>
 </body>
 </html>
