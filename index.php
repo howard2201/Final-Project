@@ -1,4 +1,5 @@
 <?php
+//first page
 session_start();
 
 // Get logout message if any
