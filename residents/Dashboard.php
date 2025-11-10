@@ -56,6 +56,7 @@ if(count($requests)){
 </div>
 </main>
 
+<?php include '../includes/chat.php'; ?>
 <?php include '../includes/footer.php'; ?>
 </body>
 </html>

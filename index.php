@@ -117,6 +117,8 @@ if (isset($_SESSION['logout_message'])) {
     </div>
 </div>
 
+<?php include 'includes/chat.php'; ?>
+
 <?php include 'includes/footer.php'; ?>
 
 <script src="js/appear.js"></script>

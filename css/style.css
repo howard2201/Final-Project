@@ -332,3 +332,237 @@ table td {
 .close:hover {
   color: var(--primary);
 }
+
+.chat-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 0.8rem 1.4rem;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.25s ease;
+  z-index: 1000;
+}
+
+.chat-btn:hover {
+  background: #1554b1;
+  transform: translateY(-2px);
+}
+
+.chat-box {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  width: 320px;
+  max-height: 420px;
+  background: var(--card);
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 1000;
+  animation: slideUp 0.3s ease;
+}
+
+.chat-header {
+  background: var(--primary);
+  color: #fff;
+  padding: 0.9rem 1rem;
+  font-weight: 600;
+  font-size: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chat-header button {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.chat-body {
+  flex: 1;
+  padding: 1rem;
+  overflow-y: auto;
+  background: var(--bg);
+}
+
+.chat-footer {
+  display: flex;
+  border-top: 1px solid #e5e7eb;
+  padding: 0.6rem;
+  background: #fff;
+}
+
+.chat-footer input {
+  flex: 1;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 0.5rem 0.8rem;
+  outline: none;
+}
+
+.chat-footer button {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  padding: 0.5rem 0.9rem;
+  border-radius: 6px;
+  margin-left: 0.5rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.chat-footer button:hover {
+  background: #1554b1;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+.site-header {
+  background: #607d8b;
+  color: #fff;
+  padding: 1rem 0;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand {
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.6rem;
+}
+
+.nav a {
+  color: #fff;
+  margin-left: 1.2rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.nav a:hover {
+  color: #cfd8dc;
+}
+
+.nav .btn {
+  margin-left: 1.2rem;
+}
+
+.nav .btn.outline {
+  border-color: #fff;
+  color: #fff;
+}
+
+.nav .btn.outline:hover {
+  background: #455a64;
+  color: #fff;
+}
+
+.site-footer {
+  background: #455a64;
+  color: #ffffff;
+  padding: 2.5rem 1rem;
+  font-size: 0.95rem;
+  border-top: 3px solid #607d8b;
+}
+
+.footer-grid {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.footer-grid div h4 {
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+  color: #ffffff;
+}
+
+.footer-grid div p {
+  color: #cfd8dc;
+  margin-bottom: 0.3rem;
+  line-height: 1.4;
+}
+
+.site-footer a {
+  color: #b0bec5;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.site-footer a:hover {
+  color: #ffffff;
+}
+
+.site-footer .copyright {
+  margin-top: 2rem;
+  text-align: center;
+  font-size: 0.85rem;
+  color: #b0bec5;
+}
+
+@media (max-width: 800px) {
+  .nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    margin-top: 0.5rem;
+  }
+
+  .nav a, .nav .btn {
+    margin-left: 0;
+  }
+
+  .footer-grid {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .footer-grid div {
+    flex: 1 1 100%;
+  }
+}
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.admin-layout, .auth-page, .form-card {
+  flex: 1;
+}
+
+.site-footer {
+  margin-top: auto;
+}

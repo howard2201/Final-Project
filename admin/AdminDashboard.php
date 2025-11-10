@@ -112,6 +112,7 @@ if (isset($_SESSION['success_message'])) {
       </section>
     </main>
   </div>
+  <?php include 'adminchat.php'; ?>
 </body>
 
 </html>
