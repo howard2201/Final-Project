@@ -34,7 +34,7 @@ foreach ($filteredRequests as $r) {
     }
 }
 
-if (isset($_POST['update_status'])) {
+if (isset($_POST['request_id']) && isset($_POST['status'])) {
   try {
     $admin->updateRequestStatus($_POST['request_id'], $_POST['status']);
     $_SESSION['success_message'] = "Request status updated successfully!";
@@ -130,29 +130,16 @@ if (isset($_SESSION['success_message'])) {
           </thead>
           <tbody>
             <?php
-            if ($filteredRequests) {
+            if ($filteredRequests && count($filteredRequests) > 0) {
               foreach ($filteredRequests as $r) {
                 $id = htmlspecialchars($r['id'], ENT_QUOTES, 'UTF-8');
                 $fullName = htmlspecialchars($r['full_name'], ENT_QUOTES, 'UTF-8');
                 $type = htmlspecialchars($r['type'], ENT_QUOTES, 'UTF-8');
                 $status = htmlspecialchars($r['status'], ENT_QUOTES, 'UTF-8');
-
-                echo "<tr>
-                  <td>{$id}</td>
-                  <td>{$fullName}</td>
-                  <td>{$type}</td>
-                  <td>{$status}</td>
-                  <td>
-                    <form method='POST' style='display:inline'>
-                      <input type='hidden' name='request_id' value='{$id}'>
-                      <button name='status' value='Approved' class='btn'>Approve</button>
-                      <button name='status' value='Rejected' class='btn outline'>Reject</button>
-                    </form>
-                  </td>
-                </tr>";
+                echo "<tr><td>{$id}</td><td>{$fullName}</td><td>{$type}</td><td>{$status}</td><td><form method='POST' style='display:inline'><input type='hidden' name='request_id' value='{$id}'><button name='status' value='Approved' class='btn'>Approve</button><button name='status' value='Rejected' class='btn outline'>Reject</button></form></td></tr>";
               }
             } else {
-              echo "<tr><td colspan='5' class='muted'>No requests found.</td></tr>";
+              echo "<tr><td colspan='5' style='text-align: center; padding: 20px; color: #999;'>No requests found.</td></tr>";
             }
             ?>
           </tbody>

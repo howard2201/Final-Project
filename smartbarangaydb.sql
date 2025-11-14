@@ -41,7 +41,16 @@ CREATE TABLE `admins` (
 --
 
 INSERT INTO `admins` (`id`, `full_name`, `email`, `password`, `created_at`) VALUES
-(1, 'Admin', 'admin@gmail.com', '$2y$10$n8WWffc7EUVMvnpJaiTKbOsYMhomiJ4hjY6MV4KNmWNYAMGoZt/Gm', '2024-01-01 00:00:00');
+(1, 'Admin', 'admin@gmail.com', '$2y$10$rnZiOj2AOotbwitV8qtRZOOGvC2Wd2fFB7yTQl0WTmvfA0Ms4RkvS', '2024-01-01 00:00:00');
+
+
+CREATE TABLE attendance (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  time_in DATETIME DEFAULT NULL,
+  time_out DATETIME DEFAULT NULL
+);
+
 
 -- --------------------------------------------------------
 
