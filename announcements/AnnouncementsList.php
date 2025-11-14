@@ -71,7 +71,9 @@ if (isset($_SESSION['success_message'])) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Announcements — Smart Barangay System</title>
-  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/header.css">
+  <link rel="stylesheet" href="../css/footer.css">
+  <link rel="stylesheet" href="../css/announcements.css">
   <script src="../js/alerts.js"></script>
 </head>
 <body <?php if ($success) echo 'data-success-message="' . htmlspecialchars($success) . '"'; ?>>

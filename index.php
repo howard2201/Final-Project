@@ -64,7 +64,9 @@ if (isset($_SESSION['logout_message'])) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Smart Brgy System — Home</title>
+  <title>Smart Barangay System for Streamlined Community Service Requests with SMS Notifications</title>
+  <link rel="stylesheet" href="css/header.css">
+  <link rel="stylesheet" href="css/footer.css">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -101,7 +103,7 @@ if (isset($_SESSION['logout_message'])) {
       </div>
     </section>
 
-    <section class="features container">
+    <section id="services" class="features container">
       <h2>Services</h2>
       <div class="scroll-cards">
         <div class="card">
@@ -172,5 +174,6 @@ if (isset($_SESSION['logout_message'])) {
 <?php include 'includes/footer.php'; ?>
 
 <script src="js/appear.js"></script>
+<script src="js/smooth-scroll.js"></script>
 </body>
 </html>

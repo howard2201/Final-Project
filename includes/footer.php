@@ -2,7 +2,7 @@
     <div class="container">
       <div class="footer-grid">
         <div>
-          <h4>Smart Brgy System</h4>
+          <h4>Bagong Pook Community Service Request</h4>
           <p>Lipa City, Batangas</p>
         </div>
         <div>

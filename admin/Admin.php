@@ -78,4 +78,15 @@ class Admin {
             throw new Exception("Unable to update resident approval status. Please try again.");
         }
     }
+
+    public function getAttendanceRecords() {
+        try {
+            $stmt = $this->conn->prepare("SELECT id, name, time_in, time_out FROM attendance ORDER BY id DESC");
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Get attendance records error: " . $e->getMessage());
+            return []; // Return empty array on error
+        }
+    }
 }

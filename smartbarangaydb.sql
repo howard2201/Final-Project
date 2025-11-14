@@ -35,6 +35,19 @@ CREATE TABLE `admins` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- attendance
+CREATE TABLE attendance (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  time_in DATETIME DEFAULT NULL,
+  time_out DATETIME DEFAULT NULL
+);
+
+INSERT INTO attendance (name, time_in, time_out) VALUES
+('John Doe', '2025-11-07 08:00:00', '2025-11-07 17:00:00'),
+('Jane Smith', '2025-11-07 09:30:00', '2025-11-07 18:30:00'),
+('Bob Johnson', '2025-11-07 10:15:00', '2025-11-07 19:15:00');
+
 --
 -- Dumping data for table `admins`
 -- Default admin account: email: admin@gmail.com, password: admin12345

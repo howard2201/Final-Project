@@ -1,0 +1,142 @@
+/* ========================================
+   TEMPORARY/PENDING PAGE STYLES
+   ======================================== */
+
+:root {
+  --primary: #1f6feb;
+  --muted: #6b7280;
+  --bg: #f7f7fb;
+  --card: #ffffff;
+  --accent: #f3f4f6;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: var(--bg);
+  color: #111;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1rem;
+  padding-bottom: 3rem;
+}
+
+.pending-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 200px);
+  padding: 6rem 2rem 4rem;
+  margin-top: 0;
+  overflow-y: auto;
+}
+
+.pending-card {
+  max-width: 600px;
+  width: 100%;
+  background: var(--card);
+  padding: 3rem 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1);
+  text-align: center;
+  margin: 2rem auto;
+}
+
+.pending-icon {
+  font-size: 4rem;
+  margin-bottom: 1.5rem;
+}
+
+.pending-card h1 {
+  color: #f59e0b;
+  margin-bottom: 1rem;
+  font-size: 1.8rem;
+}
+
+.pending-card p {
+  color: var(--muted);
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.info-box {
+  background: #fff3cd;
+  border-left: 4px solid #f59e0b;
+  padding: 1rem;
+  margin: 1.5rem 0;
+  border-radius: 6px;
+  text-align: left;
+}
+
+.info-box strong {
+  color: #856404;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.info-box p {
+  color: #856404;
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.action-buttons {
+  margin-top: 2rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.logout-link {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 500;
+  padding: 0.6rem 1.2rem;
+  border: 1px solid var(--primary);
+  border-radius: 0;
+  transition: all 0.2s;
+}
+
+.logout-link:hover {
+  background: var(--primary);
+  color: white;
+}
+
+.contact-note {
+  font-size: 0.9rem;
+  margin-top: 1.5rem;
+}
+
+/* Responsive styles */
+@media (max-width: 800px) {
+  .pending-container {
+    padding: 4rem 1rem 3rem;
+    min-height: calc(100vh - 200px);
+  }
+
+  .pending-card {
+    padding: 2rem 1rem;
+    margin: 2rem auto;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  .logout-link {
+    width: 100%;
+    text-align: center;
+  }
+}
+

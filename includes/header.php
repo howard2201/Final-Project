@@ -5,10 +5,10 @@ if (session_status() == PHP_SESSION_NONE) {
 ?>
 <header class="site-header">
     <div class="container header-inner">
-        <div class="brand">Smart Brgy System</div>
+        <div class="brand">Bagong Pook Community Service Request</div>
         <nav class="nav">
             <a href="index.php">Home</a>
-            <a href="requests/RequestForm.php">Services</a>
+            <a href="#services" class="services-link">Services</a>
             <a href="announcements/AnnouncementsList.php">Announcements</a>
 
             <?php

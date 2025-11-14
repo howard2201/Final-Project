@@ -1,0 +1,193 @@
+/* ========================================
+   ATTENDANCE MANAGEMENT STYLES
+   ======================================== */
+
+.section-header {
+  margin-bottom: 1.5rem;
+}
+
+.section-header h2 {
+  color: #111;
+  margin-bottom: 0.5rem;
+}
+
+.section-header p {
+  color: var(--muted);
+  margin-top: 0.5rem;
+}
+
+/* Search Section Styles */
+.search-section {
+  margin-bottom: 2rem;
+}
+
+.search-section form {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-end;
+}
+
+.search-section .date-input-wrapper {
+  flex: 1;
+  max-width: 300px;
+}
+
+.search-section label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.search-section input[type="date"] {
+  width: 100%;
+  padding: 0.6rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: all 0.3s;
+  background: #fff;
+  color: #111;
+}
+
+.search-section input[type="date"]:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(31, 111, 235, 0.1);
+}
+
+.search-section .btn {
+  margin-bottom: 0;
+}
+
+.search-section .btn.outline {
+  margin-bottom: 0;
+}
+
+/* Empty State Styles */
+.empty-state {
+  text-align: center;
+  padding: 3rem;
+  background: var(--card);
+  border-radius: 8px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+  color: var(--muted);
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+/* Attendance Table Styles */
+#attendanceTable {
+  background: transparent;
+}
+
+#attendanceDataTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  background: var(--card);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+}
+
+#attendanceDataTable thead {
+  background: var(--accent);
+}
+
+#attendanceDataTable th,
+#attendanceDataTable td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+}
+
+#attendanceDataTable th {
+  font-weight: 600;
+  color: #333;
+  background: var(--accent);
+}
+
+#attendanceDataTable tbody tr:hover {
+  background: rgba(31, 111, 235, 0.05);
+  transition: background 0.2s;
+}
+
+#attendanceDataTable tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* DataTables Pagination and Controls */
+.dataTables_wrapper {
+  margin-top: 1.5rem;
+}
+
+.dataTables_length,
+.dataTables_filter {
+  margin-bottom: 1rem;
+}
+
+.dataTables_paginate {
+  margin-top: 1rem;
+  text-align: right;
+}
+
+.paginate_button {
+  background: var(--card);
+  border: 1px solid #e5e7eb;
+  padding: 0.4rem 0.8rem;
+  margin: 0 0.2rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #111;
+}
+
+.paginate_button:hover {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+
+.paginate_button.current {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+
+.paginate_button.disabled {
+  color: #ccc;
+  cursor: not-allowed;
+}
+
+/* Responsive Styles */
+@media (max-width: 800px) {
+  .search-section form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-section .date-input-wrapper {
+    max-width: 100%;
+  }
+
+  .search-section .btn {
+    width: 100%;
+  }
+
+  #attendanceDataTable {
+    font-size: 0.85rem;
+  }
+
+  #attendanceDataTable th,
+  #attendanceDataTable td {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .dataTables_paginate {
+    text-align: center;
+  }
+}

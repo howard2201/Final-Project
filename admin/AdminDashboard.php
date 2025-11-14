@@ -67,7 +67,7 @@ if (isset($_SESSION['success_message'])) {
 <head>
   <meta charset="UTF-8">
   <title>Admin Dashboard</title>
-  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/admin_dashboard.css">
 
   <!-- DataTables -->
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css">
@@ -103,6 +103,7 @@ if (isset($_SESSION['success_message'])) {
             </div>
           </div>
           <a href="ResidentApprovals.php">Resident Approvals</a>
+          <a href="AttendanceView.php">Attendance</a>
           <a href="../announcements/AnnouncementsList.php">Announcements</a>
         </div>
       </nav>
