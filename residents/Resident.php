@@ -36,15 +36,22 @@ class Resident {
 
     public function login($email, $password) {
         try {
+            // Use stored procedure for login to centralize SQL logic
             $stmt = $this->conn->prepare("CALL loginResident(?)");
             $stmt->execute([$email]);
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
+            // Close cursor to avoid leftover resultsets when calling other procedures
+            if (method_exists($stmt, 'closeCursor')) {
+                $stmt->closeCursor();
+            }
+
             // Check both SHA-256 and bcrypt for backward compatibility
             $passwordHash = hash('sha256', $password);
-            if ($user && ($user['resident_password'] === $passwordHash || password_verify($password, $user['resident_password']))) {
+            if ($user && (isset($user['resident_password']) && ($user['resident_password'] === $passwordHash || password_verify($password, $user['resident_password'])))) {
                 return $user;
             }
+
             return false;
         } catch (PDOException $e) {
             error_log("Login error: " . $e->getMessage());

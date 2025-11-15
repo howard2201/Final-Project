@@ -70,6 +70,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <?php unset($_SESSION['success_message']); ?>
 <?php endif; ?>
 
+<?php if(!empty($error)): ?>
+    <div data-error-message="<?php echo htmlspecialchars($error); ?>"></div>
+<?php endif; ?>
+
 <main class="container auth-page">
     <div class="auth-card">
         <h2>🔐 Admin Login</h2>
@@ -93,6 +97,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <button type="submit" class="btn">Login as Admin</button>
             </div>
         </form>
+
+        <div class="login-divider">
+            <p>Forgot your password?</p>
+            <a href="AdminForgotPassword.php">🔑 Reset Password</a>
+        </div>
 
         <div class="login-divider">
             <p>Not a resident?</p>
