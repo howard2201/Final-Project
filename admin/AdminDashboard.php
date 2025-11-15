@@ -89,25 +89,7 @@ if (isset($_SESSION['success_message'])) {
   <?php endif; ?>
 
   <div class="admin-layout">
-    <aside class="sidebar">
-      <div class="brand">Admin</div>
-      <nav>
-        <div class="sidebar-links">
-          <a href="AdminDashboard.php">Dashboard</a>
-          <div class="dropdown">
-            <button class="dropbtn">Requests ▾</button>
-            <div class="dropdown-content">
-              <a href="AdminDashboard.php?type=registration">Registration Requests</a>
-              <a href="AdminDashboard.php?type=document">Document Requests</a>
-              <a href="AdminDashboard.php">All Requests</a>
-            </div>
-          </div>
-          <a href="ResidentApprovals.php">Resident Approvals</a>
-          <a href="AttendanceView.php">Attendance</a>
-          <a href="../announcements/AnnouncementsList.php">Announcements</a>
-        </div>
-      </nav>
-    </aside>
+    <?php include __DIR__ . '/sidebar.php'; ?>
 
     <main class="admin-main">
       <header class="admin-top">

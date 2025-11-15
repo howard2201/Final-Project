@@ -81,24 +81,7 @@ if (isset($_SESSION['success_message'])) {
   <?php if ($isAdmin): ?>
     <!-- Admin Layout with Sidebar -->
     <div class="admin-layout">
-      <aside class="sidebar">
-        <div class="brand">Admin</div>
-        <nav>
-          <div class="sidebar-links">
-            <a href="../admin/AdminDashboard.php">Dashboard</a>
-            <div class="dropdown">
-              <button class="dropbtn">Requests ▾</button>
-              <div class="dropdown-content">
-                <a href="../admin/AdminDashboard.php?type=registration">Registration Requests</a>
-                <a href="../admin/AdminDashboard.php?type=document">Document Requests</a>
-                <a href="../admin/AdminDashboard.php">All Requests</a>
-              </div>
-            </div>
-            <a href="../admin/ResidentApprovals.php">Resident Approvals</a>
-            <a href="AnnouncementsList.php" class="active">Announcements</a>
-          </div>
-        </nav>
-      </aside>
+      <?php include __DIR__ . '/../admin/sidebar.php'; ?>
 
       <main class="admin-main">
         <header class="admin-header">

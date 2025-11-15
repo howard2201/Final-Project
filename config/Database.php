@@ -49,67 +49,7 @@ class Database {
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>' . htmlspecialchars($title) . '</title>
-            <style>
-                body {
-                    font-family: Arial, sans-serif;
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    min-height: 100vh;
-                    margin: 0;
-                    padding: 20px;
-                }
-                .error-container {
-                    background: white;
-                    padding: 40px;
-                    border-radius: 10px;
-                    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-                    max-width: 500px;
-                    text-align: center;
-                }
-                .error-icon {
-                    font-size: 60px;
-                    margin-bottom: 20px;
-                }
-                h1 {
-                    color: #333;
-                    margin: 0 0 15px 0;
-                    font-size: 24px;
-                }
-                .error-message {
-                    color: #666;
-                    margin: 15px 0;
-                    line-height: 1.6;
-                }
-                .error-suggestion {
-                    background: #f0f4ff;
-                    padding: 15px;
-                    border-radius: 5px;
-                    color: #555;
-                    margin-top: 20px;
-                    border-left: 4px solid #667eea;
-                }
-                .btn {
-                    display: inline-block;
-                    margin-top: 20px;
-                    padding: 12px 30px;
-                    background: #667eea;
-                    color: white;
-                    text-decoration: none;
-                    border-radius: 5px;
-                    transition: background 0.3s;
-                }
-                .btn:hover {
-                    background: #5568d3;
-                }
-                .btn-secondary {
-                    background: #764ba2;
-                }
-                .btn-secondary:hover {
-                    background: #5f3a82;
-                }
-            </style>
+            <link rel="stylesheet" href="../css/error.css">
         </head>
         <body>
             <div class="error-container">

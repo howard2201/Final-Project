@@ -374,7 +374,6 @@ body:not(.admin-layout) .container {
   color: red;
   padding: 10px;
   background: #ffe6e6;
-  border-radius: 5px;
   margin-bottom: 15px;
 }
 

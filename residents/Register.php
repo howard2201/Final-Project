@@ -128,6 +128,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <?php unset($_SESSION['success_message']); ?>
 <?php endif; ?>
 
+<?php if(!empty($error)): ?>
+  <div data-error-message="<?php echo htmlspecialchars($error); ?>"></div>
+<?php endif; ?>
+
 <main class="container auth-page">
   <div class="auth-card">
     <h2>Create an Account</h2>

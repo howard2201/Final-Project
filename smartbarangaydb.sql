@@ -113,6 +113,27 @@ CREATE TABLE `residents` (
 INSERT INTO `residents` (`id`, `full_name`, `email`, `resident_password`, `id_file`, `proof_file`, `approval_status`, `created_at`) VALUES
 (1, 'Kevin Baniel R. Guieb', 'Nog@gmail.com', '6b3a55e0261b0304143f805a24924d0c1c44524821305f31d9277843b8a10f4e', 'Screenshot 2025-11-05 134604.png', 'Screenshot 2025-11-05 134604.png', 'Approved', '2025-11-05 15:09:41');
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `messages`
+--
+
+CREATE TABLE `messages` (
+  `id` int(11) NOT NULL,
+  `sender_id` int(11) NOT NULL,
+  `sender_type` enum('resident','admin') NOT NULL,
+  `recipient_id` int(11),
+  `content` text NOT NULL,
+  `reply_to_id` int(11) DEFAULT NULL,
+  `is_edited` tinyint(1) DEFAULT 0,
+  `edited_at` timestamp NULL DEFAULT NULL,
+  `is_deleted` tinyint(1) DEFAULT 0,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 --
 -- Indexes for dumped tables
 --
@@ -143,6 +164,15 @@ ALTER TABLE `requests`
 ALTER TABLE `residents`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `email` (`email`);
+
+--
+-- Indexes for table `messages`
+--
+ALTER TABLE `messages`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `sender_id` (`sender_id`),
+  ADD KEY `recipient_id` (`recipient_id`),
+  ADD KEY `reply_to_id` (`reply_to_id`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -177,6 +207,12 @@ ALTER TABLE `requests`
 --
 ALTER TABLE `residents`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `messages`
+--
+ALTER TABLE `messages`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- Constraints for dumped tables
@@ -222,6 +258,9 @@ CREATE PROCEDURE `registerResident` (
     IN p_proof_file LONGBLOB
 )
 BEGIN
+    -- Insert new resident without explicitly setting approval_status so the
+    -- table default ('Pending') applies. This ensures newly created accounts
+    -- require admin approval before they can access protected pages.
     INSERT INTO residents (full_name, email, resident_password, id_file, proof_file)
     VALUES (p_full_name, p_email, p_password, p_id_file, p_proof_file);
 END$$
@@ -505,4 +544,215 @@ BEGIN
 END$$
 DELIMITER ;
 
+-- Get all attendance records
+DELIMITER $$
+CREATE PROCEDURE `getAllAttendanceRecords` ()
+BEGIN
+    SELECT id, name, time_in, time_out
+    FROM attendance
+    ORDER BY id DESC;
+END$$
+DELIMITER ;
+
+-- Delete attendance record by ID
+DELIMITER $$
+CREATE PROCEDURE `deleteAttendanceRecord` (
+    IN p_attendance_id INT
+)
+BEGIN
+    DELETE FROM attendance WHERE id = p_attendance_id;
+END$$
+DELIMITER ;
+
+-- Get all attendance records for API (used by api_attendance.php)
+DELIMITER $$
+CREATE PROCEDURE `getAttendanceForAPI` ()
+BEGIN
+    SELECT id, name, time_in, time_out
+    FROM attendance
+    ORDER BY id DESC;
+END$$
+DELIMITER ;
+
+-- Additional helper procedures (by-email lookups)
+DELIMITER $$
+CREATE PROCEDURE `getResidentByEmail` (
+    IN p_email VARCHAR(255)
+)
+BEGIN
+    SELECT * FROM residents WHERE email = p_email LIMIT 1;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE `getAdminByEmail` (
+    IN p_email VARCHAR(255)
+)
+BEGIN
+    SELECT * FROM admins WHERE email = p_email LIMIT 1;
+END$$
+DELIMITER ;
+
+-- ========================================
+-- MESSAGE PROCEDURES (Chat System)
+-- ========================================
+
+-- Send a new message (with optional reply reference)
+DELIMITER $$
+CREATE PROCEDURE `sendMessage` (
+    IN p_sender_id INT,
+    IN p_sender_type VARCHAR(50),
+    IN p_recipient_id INT,
+    IN p_content TEXT,
+    IN p_reply_to_id INT
+)
+BEGIN
+    INSERT INTO messages (sender_id, sender_type, recipient_id, content, reply_to_id)
+    VALUES (p_sender_id, p_sender_type, p_recipient_id, p_content, p_reply_to_id);
+    SELECT LAST_INSERT_ID() AS message_id;
+END$$
+DELIMITER ;
+
+-- Get all messages between a resident and admin
+DELIMITER $$
+CREATE PROCEDURE `getMessages` (
+    IN p_resident_id INT,
+    IN p_admin_id INT
+)
+BEGIN
+    SELECT 
+        m.id,
+        m.sender_id,
+        m.sender_type,
+        m.content,
+        m.reply_to_id,
+        m.is_edited,
+        m.edited_at,
+        m.is_deleted,
+        CASE 
+            WHEN m.sender_type = 'resident' THEN r.full_name
+            ELSE a.full_name
+        END AS sender_name,
+        m.created_at,
+        m.updated_at,
+        reply.content AS reply_to_content,
+        CASE 
+            WHEN reply.sender_type = 'resident' THEN r_reply.full_name
+            ELSE a_reply.full_name
+        END AS reply_to_sender_name
+    FROM messages m
+    LEFT JOIN residents r ON m.sender_type = 'resident' AND m.sender_id = r.id
+    LEFT JOIN admins a ON m.sender_type = 'admin' AND m.sender_id = a.id
+    LEFT JOIN messages reply ON m.reply_to_id = reply.id
+    LEFT JOIN residents r_reply ON reply.sender_type = 'resident' AND reply.sender_id = r_reply.id
+    LEFT JOIN admins a_reply ON reply.sender_type = 'admin' AND reply.sender_id = a_reply.id
+    WHERE (m.sender_id = p_resident_id AND m.sender_type = 'resident' AND m.recipient_id = p_admin_id)
+       OR (m.sender_id = p_admin_id AND m.sender_type = 'admin' AND m.recipient_id = p_resident_id)
+    ORDER BY m.created_at ASC;
+END$$
+DELIMITER ;
+
+-- Edit a message
+DELIMITER $$
+CREATE PROCEDURE `editMessage` (
+    IN p_message_id INT,
+    IN p_sender_id INT,
+    IN p_sender_type VARCHAR(50),
+    IN p_new_content TEXT
+)
+BEGIN
+    UPDATE messages
+    SET content = p_new_content, is_edited = 1, edited_at = NOW()
+    WHERE id = p_message_id AND sender_id = p_sender_id AND sender_type = p_sender_type;
+END$$
+DELIMITER ;
+
+-- Delete a message (soft delete)
+DELIMITER $$
+CREATE PROCEDURE `deleteMessage` (
+    IN p_message_id INT,
+    IN p_sender_id INT,
+    IN p_sender_type VARCHAR(50)
+)
+BEGIN
+    UPDATE messages
+    SET is_deleted = 1, deleted_at = NOW()
+    WHERE id = p_message_id AND sender_id = p_sender_id AND sender_type = p_sender_type;
+END$$
+DELIMITER ;
+
+-- Get conversation list for a resident (shows only admin)
+DELIMITER $$
+CREATE PROCEDURE `getResidentConversations` (
+    IN p_resident_id INT
+)
+BEGIN
+    SELECT DISTINCT
+        a.id,
+        a.full_name,
+        (SELECT content FROM messages 
+         WHERE (sender_id = p_resident_id AND recipient_id = a.id AND sender_type = 'resident')
+            OR (sender_id = a.id AND recipient_id = p_resident_id AND sender_type = 'admin')
+         ORDER BY created_at DESC LIMIT 1) AS last_message,
+        (SELECT created_at FROM messages 
+         WHERE (sender_id = p_resident_id AND recipient_id = a.id AND sender_type = 'resident')
+            OR (sender_id = a.id AND recipient_id = p_resident_id AND sender_type = 'admin')
+         ORDER BY created_at DESC LIMIT 1) AS last_message_time,
+        (SELECT COUNT(*) FROM messages 
+         WHERE sender_id = a.id AND recipient_id = p_resident_id AND sender_type = 'admin' AND is_deleted = 0) AS unread_count
+    FROM admins a
+    WHERE EXISTS (
+        SELECT 1 FROM messages 
+        WHERE (sender_id = p_resident_id AND recipient_id = a.id AND sender_type = 'resident')
+           OR (sender_id = a.id AND recipient_id = p_resident_id AND sender_type = 'admin')
+    )
+    ORDER BY last_message_time DESC;
+END$$
+DELIMITER ;
+
+-- Get conversation list for an admin (shows only approved residents)
+DELIMITER $$
+CREATE PROCEDURE `getAdminConversations` (
+    IN p_admin_id INT
+)
+BEGIN
+    SELECT DISTINCT
+        r.id,
+        r.full_name,
+        (SELECT content FROM messages 
+         WHERE (sender_id = r.id AND recipient_id = p_admin_id AND sender_type = 'resident')
+            OR (sender_id = p_admin_id AND recipient_id = r.id AND sender_type = 'admin')
+         ORDER BY created_at DESC LIMIT 1) AS last_message,
+        (SELECT created_at FROM messages 
+         WHERE (sender_id = r.id AND recipient_id = p_admin_id AND sender_type = 'resident')
+            OR (sender_id = p_admin_id AND recipient_id = r.id AND sender_type = 'admin')
+         ORDER BY created_at DESC LIMIT 1) AS last_message_time,
+        (SELECT COUNT(*) FROM messages 
+         WHERE sender_id = r.id AND recipient_id = p_admin_id AND sender_type = 'resident' AND is_deleted = 0) AS unread_count
+    FROM residents r
+    WHERE r.approval_status = 'Approved'
+    AND EXISTS (
+        SELECT 1 FROM messages 
+        WHERE (sender_id = r.id AND recipient_id = p_admin_id AND sender_type = 'resident')
+           OR (sender_id = p_admin_id AND recipient_id = r.id AND sender_type = 'admin')
+    )
+    ORDER BY last_message_time DESC;
+END$$
+DELIMITER ;
+
+
+-- Cleanup event: delete rejected residents older than 10 days
+-- NOTE: MySQL event scheduler must be enabled (SET GLOBAL event_scheduler = ON) for this to run.
+DELIMITER $$
+CREATE EVENT IF NOT EXISTS `delete_rejected_residents_daily`
+ON SCHEDULE EVERY 1 DAY
+COMMENT 'Delete rejected resident accounts older than 10 days'
+DO
+BEGIN
+    DELETE FROM residents
+    WHERE approval_status = 'Rejected'
+    AND rejection_date IS NOT NULL
+    AND rejection_date < (NOW() - INTERVAL 10 DAY);
+END$$
+DELIMITER ;
 
