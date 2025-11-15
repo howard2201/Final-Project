@@ -105,6 +105,25 @@ if (isset($_SESSION['success_message'])) {
         </div>
       </header>
 
+      <!-- Admin Credentials Display -->
+      <div class="admin-credentials">
+        <div class="credentials-box">
+          <h3>Admin Account</h3>
+          <div class="credential-item">
+            <span class="label">Username/Email:</span>
+            <span class="value"><?php echo htmlspecialchars($_SESSION['admin_email'] ?? 'N/A'); ?></span>
+          </div>
+          <div class="credential-item">
+            <span class="label">ID:</span>
+            <span class="value"><?php echo htmlspecialchars($_SESSION['admin_id'] ?? 'N/A'); ?></span>
+          </div>
+          <div class="credential-item">
+            <span class="label">Default Password:</span>
+            <span class="value">admin123</span>
+          </div>
+        </div>
+      </div>
+
       <?php if (!empty($error)): ?>
         <div class="alert-error">
           <strong>⚠️ Error</strong>

@@ -74,6 +74,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div data-error-message="<?php echo htmlspecialchars($error); ?>"></div>
 <?php endif; ?>
 
+<div class="admin-credentials-banner">
+    <div class="credentials-content">
+        <h3>📋 Admin Account Credentials</h3>
+        <div class="credentials-info">
+            <p><strong>Email:</strong> <span>admin@gmail.com</span></p>
+            <p><strong>Password:</strong> <span>admin12345</span></p>
+        </div>
+    </div>
+</div>
+
 <main class="container auth-page">
     <div class="auth-card">
         <h2>🔐 Admin Login</h2>
