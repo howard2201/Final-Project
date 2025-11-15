@@ -119,7 +119,7 @@ if (isset($_SESSION['success_message'])) {
           </div>
           <div class="credential-item">
             <span class="label">Default Password:</span>
-            <span class="value">admin123</span>
+            <span class="value">admin12345</span>
           </div>
         </div>
       </div>

@@ -168,4 +168,18 @@ class Admin {
             throw new Exception("Unable to update attendance record. Please try again.");
         }
     }
+
+    public function addManualAttendance($name, $time_in, $time_out = null) {
+        try {
+            $stmt = $this->conn->prepare("CALL addManualAttendance(?, ?, ?)");
+            $result = $stmt->execute([$name, $time_in, $time_out]);
+            if (method_exists($stmt, 'closeCursor')) {
+                $stmt->closeCursor();
+            }
+            return $result;
+        } catch (PDOException $e) {
+            error_log("Add manual attendance error: " . $e->getMessage());
+            throw new Exception("Unable to add manual attendance record. Please try again.");
+        }
+    }
 }

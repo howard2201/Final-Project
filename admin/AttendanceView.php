@@ -18,6 +18,37 @@ try {
     $error = null;
     $deleteSuccess = null;
 
+    // Handle manual attendance addition
+    if (isset($_POST['add_manual_attendance'])) {
+        try {
+            $manualName = trim($_POST['manual_name']);
+            $manualTimeIn = trim($_POST['manual_time_in']);
+            $manualTimeOut = !empty(trim($_POST['manual_time_out'])) ? trim($_POST['manual_time_out']) : null;
+
+            // Validate inputs
+            if (empty($manualName)) {
+                throw new Exception("Name cannot be empty.");
+            }
+            if (empty($manualTimeIn)) {
+                throw new Exception("Time In cannot be empty.");
+            }
+
+            // Convert datetime-local format to database format if needed
+            $timeInFormatted = str_replace('T', ' ', $manualTimeIn);
+            $timeOutFormatted = $manualTimeOut ? str_replace('T', ' ', $manualTimeOut) : null;
+
+            // Add the manual attendance record
+            $admin->addManualAttendance($manualName, $timeInFormatted, $timeOutFormatted);
+            $deleteSuccess = "Manual attendance record added successfully!";
+            
+            // Refresh records
+            $attendanceRecords = $admin->getAttendanceRecords();
+            $filteredRecords = $attendanceRecords;
+        } catch (Exception $e) {
+            $error = "Failed to add attendance: " . $e->getMessage();
+        }
+    }
+
     // Handle delete request
     if (isset($_POST['delete_id'])) {
         try {
@@ -234,7 +265,12 @@ try {
       <!-- Attendance Table -->
       <section id="attendanceTable">
         <div class="section-header">
-          <h2>Attendance Records</h2>
+          <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            <h2>Attendance Records</h2>
+            <button type="button" class="btn" onclick="openAddManualModal()" title="Add Manual Attendance">
+              ➕ Add Manual Attendance
+            </button>
+          </div>
         </div>
 
         <!-- Summary Cards -->
@@ -348,6 +384,33 @@ try {
             </table>
           </div>
         </div>
+
+        <!-- Manual Attendance Modal -->
+        <div id="manualAttendanceModal" class="modal">
+          <div class="modal-content">
+            <span class="close" onclick="closeAddManualModal()">&times;</span>
+            <h2>Add Manual Attendance Record</h2>
+            <form method="POST" id="manualAttendanceForm">
+              <input type="hidden" name="add_manual_attendance" value="1">
+              <div style="margin-bottom: 1rem;">
+                <label for="manual_name" style="display: block; font-weight: 600; margin-bottom: 0.5rem;">Name</label>
+                <input type="text" id="manual_name" name="manual_name" required style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
+              </div>
+              <div style="margin-bottom: 1rem;">
+                <label for="manual_time_in" style="display: block; font-weight: 600; margin-bottom: 0.5rem;">Time In</label>
+                <input type="datetime-local" id="manual_time_in" name="manual_time_in" required style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
+              </div>
+              <div style="margin-bottom: 1rem;">
+                <label for="manual_time_out" style="display: block; font-weight: 600; margin-bottom: 0.5rem;">Time Out (Optional)</label>
+                <input type="datetime-local" id="manual_time_out" name="manual_time_out" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
+              </div>
+              <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                <button type="button" class="btn outline" onclick="closeAddManualModal()">Cancel</button>
+                <button type="submit" class="btn">Add Attendance</button>
+              </div>
+            </form>
+          </div>
+        </div>
       </section>
 
     </main>
@@ -374,6 +437,28 @@ try {
     window.addEventListener('click', function(event) {
       if (event.target === modal) {
         modal.style.display = 'none';
+      }
+    });
+
+    // Open manual attendance modal
+    function openAddManualModal() {
+      const manualModal = document.getElementById('manualAttendanceModal');
+      manualModal.style.display = 'block';
+    }
+
+    // Close manual attendance modal
+    function closeAddManualModal() {
+      const manualModal = document.getElementById('manualAttendanceModal');
+      manualModal.style.display = 'none';
+      // Reset form
+      document.getElementById('manualAttendanceForm').reset();
+    }
+
+    // Close manual modal when clicking outside of it
+    window.addEventListener('click', function(event) {
+      const manualModal = document.getElementById('manualAttendanceModal');
+      if (event.target === manualModal) {
+        manualModal.style.display = 'none';
       }
     });
 
