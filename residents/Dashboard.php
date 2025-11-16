@@ -73,9 +73,9 @@ if (isset($_SESSION['success_message'])) {
 <head>
 <meta charset="UTF-8">
 <title>Dashboard</title>
-<link rel="stylesheet" href="../css/header.css">
-<link rel="stylesheet" href="../css/footer.css">
-<link rel="stylesheet" href="../css/dashboard.css">
+<link rel="stylesheet" href="../css/headers.css">
+<link rel="stylesheet" href="../css/footers.css">
+<link rel="stylesheet" href="../css/dashboards.css">
 <script src="../js/alerts.js"></script>
 </head>
 <body>

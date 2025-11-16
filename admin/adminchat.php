@@ -40,6 +40,6 @@
   </div>
 </div>
 
-<link rel="stylesheet" href="../css/chat.css">
+<link rel="stylesheet" href="../css/chats.css">
 <script src="../js/chat.js"></script>
 

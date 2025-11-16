@@ -133,9 +133,9 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
 <head>
 <meta charset="UTF-8">
 <title>Request Service</title>
-<link rel="stylesheet" href="../css/header.css">
-<link rel="stylesheet" href="../css/footer.css">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/headers.css">
+<link rel="stylesheet" href="../css/footers.css">
+<link rel="stylesheet" href="../css/styles.css">
 <script src="../js/alerts.js"></script>
 </head>
 <body>

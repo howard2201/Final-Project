@@ -18,8 +18,8 @@ $residentEmail = isset($_SESSION['pending_resident_email']) ? $_SESSION['pending
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Account Pending Approval — Smart Brgy System</title>
-    <link rel="stylesheet" href="../css/header.css">
-    <link rel="stylesheet" href="../css/footer.css">
+    <link rel="stylesheet" href="../css/headers.css">
+    <link rel="stylesheet" href="../css/footers.css">
     <link rel="stylesheet" href="../css/temporary_page.css">
 </head>
 <body>

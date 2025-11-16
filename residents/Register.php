@@ -115,9 +115,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Register — Prototype</title>
-  <link rel="stylesheet" href="../css/header.css">
-  <link rel="stylesheet" href="../css/footer.css">
-  <link rel="stylesheet" href="../css/register.css">
+  <link rel="stylesheet" href="../css/headers.css">
+  <link rel="stylesheet" href="../css/footers.css">
+  <link rel="stylesheet" href="../css/registers.css">
   <script src="../js/alerts.js"></script>
 </head>
 <body>
