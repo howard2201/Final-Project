@@ -67,7 +67,7 @@ if (isset($_SESSION['success_message'])) {
 <head>
   <meta charset="UTF-8">
   <title>Admin Dashboard</title>
-  <link rel="stylesheet" href="../css/admin_dashboard.css">
+  <link rel="stylesheet" href="../css/admin_dashboardss.css">
 
   <!-- DataTables -->
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css">

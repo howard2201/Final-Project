@@ -39,7 +39,5 @@
     </div>
   </div>
 </div>
-
-<link rel="stylesheet" href="../css/chat.css">
 <script src="../js/chat.js"></script>
 
