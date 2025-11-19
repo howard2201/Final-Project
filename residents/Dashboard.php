@@ -73,9 +73,7 @@ if (isset($_SESSION['success_message'])) {
 <head>
 <meta charset="UTF-8">
 <title>Dashboard</title>
-<link rel="stylesheet" href="../css/headers.css">
-<link rel="stylesheet" href="../css/footers.css">
-<link rel="stylesheet" href="../css/dashboards.css">
+<link rel="stylesheet" href="../css/residents.css">
 <script src="../js/alerts.js"></script>
 </head>
 <body>
@@ -112,6 +110,12 @@ if (isset($_SESSION['success_message'])) {
 <div class="stat card"><h3><?php echo count(array_filter($requests, fn($r)=>$r['status']=='Pending')); ?></h3><p>Pending</p></div>
 <div class="stat card"><h3><?php echo count(array_filter($requests, fn($r)=>$r['status']=='Approved')); ?></h3><p>Approved</p></div>
 <div class="stat card"><h3><?php echo count(array_filter($requests, fn($r)=>$r['status']=='Rejected')); ?></h3><p>Rejected</p></div>
+
+</div>
+<div class="hero-actions">
+<div class="request-button" style="margin: 1.5rem 0;">
+    <a href="../requests/RequestForm.php" class="btn">Request a Document</a>
+</div>
 </div>
 
 <h3>Your Requests</h3>
@@ -132,7 +136,6 @@ if(count($requests)){
 </div>
 </main>
 
-<?php include '../includes/chat.php'; ?>
 <?php include '../includes/footer.php'; ?>
 </body>
 </html>

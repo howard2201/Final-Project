@@ -133,9 +133,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
 <head>
 <meta charset="UTF-8">
 <title>Request Service</title>
-<link rel="stylesheet" href="../css/headers.css">
-<link rel="stylesheet" href="../css/footers.css">
-<link rel="stylesheet" href="../css/styles.css">
+<link rel="stylesheet" href="../css/residents.css">
 <script src="../js/alerts.js"></script>
 </head>
 <body>
@@ -202,6 +200,14 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
 </form>
 </div>
 </main>
+    
+<div class="hero-actions">
+<!-- Back Button aligned right -->
+<div style="margin-bottom: 2rem; text-align: right;">
+    <a href="../residents/Dashboard.php" class="btn outline">← Back to Dashboard</a>
+</div>
+
+</div>
 
 <script src="../js/appear.js"></script>
 <script>
