@@ -8,7 +8,6 @@ if (session_status() == PHP_SESSION_NONE) {
         <div class="brand">Bagong Pook Community Service Request</div>
         <nav class="nav">
             <a href="index.php">Home</a>
-            <a href="requests/RequestForm.php">Services</a>
             <a href="announcements/AnnouncementsList.php">Announcements</a>
 
             <?php
@@ -24,3 +23,5 @@ if (session_status() == PHP_SESSION_NONE) {
         </nav>
     </div>
 </header>
+<link rel="stylesheet" href="../css/include.css">
+<link rel="stylesheet" href="css/include.css">

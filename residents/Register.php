@@ -115,9 +115,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Register — Prototype</title>
-  <link rel="stylesheet" href="../css/headers.css">
-  <link rel="stylesheet" href="../css/footers.css">
-  <link rel="stylesheet" href="../css/registers.css">
+  <link rel="stylesheet" href="../css/residents.css">
   <script src="../js/alerts.js"></script>
 </head>
 <body>
@@ -133,6 +131,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <?php endif; ?>
 
 <main class="container auth-page">
+  <div class="backlogin">
+  <img src="../assets/img/logo.png" alt="logo">
   <div class="auth-card">
     <h2>Create an Account</h2>
     <?php if(!empty($error)): ?>
@@ -162,6 +162,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <a href="Login.php" class="btn outline">Login</a>
       </div>
     </form>
+  </div>
   </div>
 </main>
 

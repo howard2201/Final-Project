@@ -65,9 +65,7 @@ if (isset($_SESSION['logout_message'])) {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Smart Barangay System for Streamlined Community Service Requests with SMS Notifications</title>
-  <link rel="stylesheet" href="css/headers.css">
-  <link rel="stylesheet" href="css/footers.css">
-  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/residents.css">
 </head>
 <body>
 

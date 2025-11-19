@@ -3,7 +3,6 @@
         <div class="brand">Bagong Pook Community Service Request</div>
         <nav class="nav">
             <a href="../index.php">Home</a>
-            <a href="../index.php#services" class="services-link">Services</a>
             <a href="../announcements/AnnouncementsList.php">Announcements</a>
 
             <?php
@@ -27,3 +26,5 @@
         </nav>
     </div>
 </header>
+<link rel="stylesheet" href="../css/include.css">
+<link rel="stylesheet" href="css/include.css">

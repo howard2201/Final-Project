@@ -40,4 +40,5 @@
   </div>
 </div>
 <script src="../js/chat.js"></script>
-
+<link rel="stylesheet" href="../css/include.css">
+<link rel="stylesheet" href="css/include.css">

@@ -1,0 +1,525 @@
+/* ========================================
+   VARIABLES
+   ======================================== */
+:root {
+  --primary-green: #2c7a2c;     /* Main green */
+  --secondary-green: #f2faf2;   /* Light green background */
+  --white: #ffffff;
+  --accent-yellow: #ffc107;     /* Accent yellow */
+  --text-dark: #1f1f1f;
+  --text-light: #555555;
+  --btn-hover: #1b5e1b;
+  --card-shadow: rgba(0, 0, 0, 0.08);
+  --transition-speed: 0.3s;
+}
+
+/* ========================================
+   RESET & BASE
+   ======================================== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Inter", system-ui, Arial, sans-serif;
+  background-color: var(--secondary-green);
+  color: var(--text-dark);
+  line-height: 1.6;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ========================================
+   HERO SECTION
+   ======================================== */
+.hero {
+  background-color: var(--white);
+  padding: 4rem 0;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px var(--card-shadow);
+  margin: 2rem 0;
+}
+
+.hero-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.hero-copy h1 {
+  font-size: 2.5rem;
+  color: var(--primary-green);
+  margin-bottom: 1rem;
+  position: relative;
+  padding-bottom: 0.5rem;
+}
+
+.hero-copy h1::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 60px;
+  height: 4px;
+  background-color: var(--accent-yellow);
+  border-radius: 2px;
+}
+
+.hero-copy p {
+  font-size: 1.1rem;
+  color: var(--text-light);
+  margin-bottom: 1.5rem;
+}
+
+/* Hero Buttons */
+.hero-actions .btn {
+  background-color: var(--primary-green);
+  color: var(--white);
+  padding: 0.8rem 1.6rem;
+  border-radius: 6px;
+  font-weight: 600;
+  transition: all var(--transition-speed);
+  margin-right: 1rem;
+}
+
+.hero-actions .btn:hover {
+  background-color: var(--btn-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px var(--card-shadow);
+}
+
+/* Resident Login / Outline Button */
+.hero-actions .btn.outline {
+  background-color: transparent;
+  border: 2px solid var(--primary-green);
+  color: var(--primary-green);
+  padding: 0.8rem 1.6rem;
+  border-radius: 6px;
+  font-weight: 600;
+  transition: all var(--transition-speed);
+}
+
+.hero-actions .btn.outline:hover {
+  background-color: var(--primary-green);
+  color: var(--white);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px var(--card-shadow);
+}
+
+.hero-image img {
+  max-width: 320px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px var(--card-shadow);
+}
+
+/* ========================================
+   LOGOUT / ALERT MESSAGE
+   ======================================== */
+.logout-message, .alert-error {
+  background-color: #e6f7e6;
+  border-left: 6px solid var(--accent-yellow);
+  padding: 1rem 1.5rem;
+  margin: 1.5rem auto;
+  border-radius: 6px;
+  width: 90%;
+  max-width: 600px;
+  box-shadow: 0 2px 6px var(--card-shadow);
+}
+
+.alert-error {
+  background-color: #fff1f0;
+  border-left-color: #f44336;
+  color: #b71c1c;
+}
+
+/* ========================================
+   LOGIN / REGISTER FORM
+   ======================================== */
+.auth-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 4rem 0;
+}
+
+.auth-card {
+  background-color: var(--white);
+  padding: 2.5rem;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 6px 20px var(--card-shadow);
+  text-align: center;
+}
+
+.auth-card h2 {
+  color: var(--primary-green);
+  margin-bottom: 1.5rem;
+  font-size: 1.8rem;
+  position: relative;
+}
+
+.auth-card h2::after {
+  content: "";
+  display: block;
+  width: 50px;
+  height: 4px;
+  background-color: var(--accent-yellow);
+  margin: 0.5rem auto 1.5rem;
+  border-radius: 2px;
+}
+
+.auth-card form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.auth-card label {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: var(--text-dark);
+}
+
+.auth-card input[type="email"],
+.auth-card input[type="password"] {
+  padding: 0.7rem 1rem;
+  margin-top: 0.3rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+}
+
+.auth-card input[type="email"]:focus,
+.auth-card input[type="password"]:focus {
+  outline: none;
+  border-color: var(--primary-green);
+  box-shadow: 0 0 5px rgba(44, 122, 44, 0.5);
+}
+
+.auth-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.auth-actions .btn {
+  flex: 1;
+}
+
+/* Divider for admin login link */
+.login-divider {
+  margin-top: 2rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--text-light);
+}
+
+.login-divider a {
+  display: inline-block;
+  margin-top: 0.5rem;
+  color: var(--primary-green);
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 0.6rem 1.2rem;
+  border: 2px solid var(--primary-green);
+  border-radius: 20px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(44, 122, 44, 0.15);
+}
+
+.login-divider a:hover {
+  background-color: var(--primary-green);
+  color: var(--white);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(44, 122, 44, 0.4);
+}
+
+/* ========================================
+   FEATURES / SCROLLABLE CARDS
+   ======================================== */
+.features h2 {
+  font-size: 2rem;
+  color: var(--primary-green);
+  margin-bottom: 1rem;
+  border-bottom: 4px solid var(--accent-yellow);
+  padding-bottom: 0.5rem;
+}
+
+.scroll-cards {
+  display: flex;
+  overflow-x: auto;
+  gap: 1.5rem;
+  padding-bottom: 1rem;
+  scroll-behavior: smooth;
+}
+
+.scroll-cards::-webkit-scrollbar {
+  height: 8px;
+}
+
+.scroll-cards::-webkit-scrollbar-thumb {
+  background-color: var(--accent-yellow);
+  border-radius: 4px;
+}
+
+.card {
+  min-width: 250px;
+  background-color: var(--white);
+  border-radius: 8px;
+  padding: 1.2rem;
+  box-shadow: 0 4px 12px var(--card-shadow);
+  transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+  flex-shrink: 0;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 16px var(--card-shadow);
+}
+
+.card h3 {
+  color: var(--primary-green);
+  margin-bottom: 0.5rem;
+  font-size: 1.2rem;
+}
+
+.card p {
+  font-size: 0.95rem;
+  color: var(--text-light);
+}
+
+/* ========================================
+   HISTORY SECTION
+   ======================================== */
+.history-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+  margin-top: 5rem;
+  margin-bottom: 5rem;
+}
+
+.history-section h2 {
+  font-size: 2rem;
+  color: var(--primary-green);
+  margin-bottom: 1rem;
+  border-bottom: 4px solid var(--accent-yellow);
+  padding-bottom: 0.5rem;
+}
+
+.history-section .btn.outline {
+  border: 2px solid var(--primary-green);
+  color: var(--primary-green);
+  background: transparent;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  font-weight: 600;
+  transition: all var(--transition-speed);
+  margin-bottom: 50px; 
+}
+
+.history-section .btn.outline:hover {
+  background-color: var(--primary-green);
+  color: var(--white);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px var(--card-shadow);
+}
+
+/* ========================================
+   MODAL
+   ======================================== */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.modal-content {
+  background-color: var(--white);
+  padding: 2rem;
+  border-radius: 8px;
+  max-width: 700px;
+  width: 90%;
+  max-height: 80%;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 6px 20px var(--card-shadow);
+}
+
+.modal-content h2 {
+  color: var(--primary-green);
+  margin-bottom: 1rem;
+  border-bottom: 3px solid var(--accent-yellow);
+  padding-bottom: 0.4rem;
+}
+
+.modal-content .close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  color: var(--primary-green);
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+@media (max-width: 768px) {
+  .auth-card {
+    padding: 2rem 1.5rem;
+  }
+
+  .auth-actions {
+    flex-direction: column;
+  }
+
+  .auth-actions .btn {
+    width: 100%;
+  }
+
+  .scroll-cards {
+    gap: 1rem;
+  }
+}
+/* ========================================
+   LOGIN & REGISTER BUTTONS
+   ======================================== */
+.auth-actions .btn {
+  flex: 1;
+  padding: 0.8rem 1.6rem; /* slightly smaller */
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 0.95rem; /* slightly smaller */
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background-color: var(--primary-green);
+  color: var(--white);
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(44, 122, 44, 0.3);
+}
+
+.auth-actions .btn:hover {
+  background-color: var(--btn-hover);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(44, 122, 44, 0.4);
+}
+
+.auth-actions .btn.outline {
+  background-color: transparent;
+  border: 2px solid var(--primary-green);
+  color: var(--primary-green);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-radius: 20px;
+  padding: 0.8rem 1.6rem; /* same as login */
+  font-size: 0.95rem; /* same as login */
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(44, 122, 44, 0.15);
+}
+
+.auth-actions .btn.outline:hover {
+  background-color: var(--primary-green);
+  color: var(--white);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(44, 122, 44, 0.4);
+}
+
+/* ========================================
+   ADMIN LOGIN LINK MATCH BUTTON STYLE
+   ======================================== */
+.login-divider a {
+  display: inline-block;
+  padding: 0.8rem 1.6rem; /* match login/register */
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 0.95rem; /* match login/register */
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: 2px solid var(--primary-green);
+  color: var(--primary-green);
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(44, 122, 44, 0.15);
+}
+
+.login-divider a:hover {
+  background-color: var(--primary-green);
+  color: var(--white);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(44, 122, 44, 0.4);
+}
+/* ========================================
+   LOGIN PAGE LOGO IMAGE
+   ======================================== */
+.auth-page img {
+  background-color: white;               /* Keep the background white */
+  border-radius: 50%;                     /* Make it circular */
+  margin-right: 20px;                     /* Right margin */
+  border: 10px solid var(--accent-yellow); 
+}
+
+/* ========================================
+   AUTH FORM TEXT INPUTS
+   ======================================== */
+.auth-card input[type="text"],
+.auth-card input[type="email"],
+.auth-card input[type="password"] {
+  padding: 0.7rem 1rem;
+  margin-top: 0.3rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+}
+
+.auth-card input[type="text"]:focus,
+.auth-card input[type="email"]:focus,
+.auth-card input[type="password"]:focus {
+  outline: none;
+  border-color: var(--primary-green);
+  box-shadow: 0 0 5px rgba(44, 122, 44, 0.5);
+}
+.backlogin {
+  background-color: rgba(128, 128, 128, 0.5);
+  display: flex;              /* enable flex layout */
+  align-items: center;        /* vertical alignment */
+  justify-content: center;    /* horizontal alignment, or use space-between/space-around if needed */
+  gap: 1rem;                  /* optional spacing between items */
+  padding: 0.8rem 0.9rem;     /* optional padding */
+  border-radius: 2px;         /* optional rounded corners */
+  color: #ffffff;             /* text color */
+  cursor: pointer;            /* optional pointer if it's a button/link */
+  border: 3px solid var(--accent-yellow); 
+}

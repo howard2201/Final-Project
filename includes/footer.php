@@ -14,3 +14,5 @@
       <p class="copyright">© <span id="year"></span> Prototype — All rights reserved.</p>
     </div>
   </footer>
+<link rel="stylesheet" href="../css/include.css">
+<link rel="stylesheet" href="css/include.css">
