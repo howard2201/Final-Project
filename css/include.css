@@ -34,7 +34,6 @@
   color: var(--white);
   font-weight: 500;
   padding: 0.5rem 1rem;
-  border-radius: 6px;
   transition: all var(--transition-speed);
 }
 
@@ -48,7 +47,6 @@
   background-color: var(--white);
   color: var(--primary-green);
   padding: 0.4rem 0.8rem;
-  border-radius: 6px;
   font-weight: 600;
   transition: all var(--transition-speed);
 }
@@ -68,6 +66,7 @@
    FOOTER
    ======================================== */
 .site-footer {
+  margin-top: 300px;
   background-color: var(--primary-green);
   color: var(--white);
   padding: 2rem 0 1rem;
