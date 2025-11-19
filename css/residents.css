@@ -119,9 +119,9 @@ a {
 }
 
 .hero-image img {
+  margin: 5rem;
   max-width: 320px;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px var(--card-shadow);
+  display: flex;
 }
 
 /* ========================================
