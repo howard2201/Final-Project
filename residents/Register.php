@@ -165,6 +165,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   </div>
   </div>
 </main>
+<script src="../js/responsive.js"></script>
 
 <?php include '../includes/footer.php'; ?>
 </body>
