@@ -71,9 +71,7 @@ if (isset($_SESSION['success_message'])) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Announcements — Smart Barangay System</title>
-  <link rel="stylesheet" href="../css/headers.css">
-  <link rel="stylesheet" href="../css/footers.css">
-  <link rel="stylesheet" href="../css/announcementss.css">
+  <link rel="stylesheet" href="../css/announcements.css">
   <script src="../js/alerts.js"></script>
 </head>
 <body <?php if ($success) echo 'data-success-message="' . htmlspecialchars($success) . '"'; ?>>
@@ -154,6 +152,8 @@ if (isset($_SESSION['success_message'])) {
           <?php foreach ($announcements as $announcement): ?>
             <div class="announcement-card">
               <div class="announcement-header">
+                <!-- Profile photo like Facebook -->
+                <img src="assets/img/logo.png" alt="logo">
                 <h3><?php echo htmlspecialchars($announcement['title']); ?></h3>
                 <span class="announcement-date">
                   📅 <?php echo date('F j, Y \a\t g:i A', strtotime($announcement['created_at'])); ?>

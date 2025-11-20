@@ -56,9 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Admin Login — Smart Barangay System</title>
-    <link rel="stylesheet" href="../css/headers.css">
-    <link rel="stylesheet" href="../css/footers.css">
-    <link rel="stylesheet" href="../css/admin_logins.css">
+    <link rel="stylesheet" href="../css/admin.css">
     <script src="../js/alerts.js"></script>
 </head>
 <body>
@@ -75,6 +73,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <?php endif; ?>
 
 <main class="container auth-page">
+<div class="backlogin">
+<img src="../assets/img/logo.png" alt="logo">
     <div class="auth-card">
         <h2>🔐 Admin Login</h2>
         <p class="auth-subtitle">Administrator Access Only</p>
@@ -107,6 +107,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <a href="../index.php" class="back-link">← Back to Home</a>
         </div>
     </div>
+</div>
 </main>
 <?php include '../includes/footer.php'; ?>
 </body>

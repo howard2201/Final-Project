@@ -902,3 +902,227 @@ footer {
 .custom-alert-close:hover {
   color: #ffd700;
 }
+/* ========================================
+   LANDING PAGE
+   ======================================== */
+.landing-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 4rem 1rem;
+  gap: 2rem;
+}
+
+.landing-container {
+  text-align: center;
+  max-width: 700px;
+  background-color: var(--white);
+  padding: 2rem;
+  border-radius: 5px;
+  box-shadow: 0 6px 20px var(--card-shadow);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.landing-container img {
+  max-width: 200px; /* smaller logo */
+  width: 100%;
+  height: auto;
+  border-radius: 50%;
+  border: 8px solid var(--accent-yellow);
+}
+
+.landing-container h1 {
+  font-size: 2rem;
+  color: var(--primary-green);
+  margin-bottom: 0.5rem;
+}
+
+.landing-container p {
+  font-size: 1rem;
+  color: var(--text-dark);
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.landing-container .btn {
+  background-color: var(--primary-green);
+  color: var(--white);
+  padding: 0.8rem 1.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(44, 122, 44, 0.3);
+}
+
+.landing-container .btn:hover {
+  background-color: var(--btn-hover);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(44, 122, 44, 0.4);
+}
+
+/* Announcements Scroll */
+.announcements-section {
+  width: 100%;
+  max-width: 1000px;
+  margin-top: 3rem;
+}
+
+.announcements-section h3 {
+  font-size: 1.5rem;
+  color: var(--primary-green);
+  margin-bottom: 1rem;
+  border-bottom: 3px solid var(--accent-yellow);
+  padding-bottom: 0.4rem;
+  text-align: left;
+}
+
+.announcements-scroll {
+  display: flex;
+  overflow-x: auto;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  scroll-behavior: smooth;
+}
+
+.announcements-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+
+.announcements-scroll::-webkit-scrollbar-thumb {
+  background-color: var(--accent-yellow);
+}
+
+.announcement-card-resident {
+  min-width: 250px;
+  background-color: var(--white);
+  padding: 1rem;
+  box-shadow: 0 4px 12px var(--card-shadow);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  flex-shrink: 0;
+}
+
+.announcement-card-resident:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px var(--card-shadow);
+}
+
+.announcement-header-resident h4 {
+  color: var(--primary-green);
+  margin-bottom: 0.3rem;
+  font-size: 1.1rem;
+}
+
+.announcement-date-resident {
+  font-size: 0.85rem;
+  color: var(--text-light);
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .landing-container {
+    padding: 1.5rem;
+    gap: 1rem;
+  }
+
+  .landing-container img {
+    max-width: 150px;
+  }
+
+  .landing-container h1 {
+    font-size: 1.5rem;
+  }
+
+  .landing-container p {
+    font-size: 0.95rem;
+  }
+
+  .announcements-scroll {
+    gap: 0.8rem;
+  }
+
+  .announcement-card-resident {
+    min-width: 200px;
+  }
+}
+/* ========================================
+   CUSTOM LOGOUT ALERT
+   ======================================== */
+.custom-alert-logout {
+    position: fixed;       /* ensure it stays relative to viewport */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.8); /* center + scale */
+    min-width: 350px;
+    max-width: 600px;
+    padding: 2rem 2.5rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    opacity: 0;
+    transition: all 0.4s ease;
+    z-index: 9999;
+    text-align: center;
+    font-family: "Inter", system-ui, Arial, sans-serif;
+    background-color: #e6f7e6; /* green background */
+    border: 4px solid #ffc107; /* yellow border */
+    color: #000;               /* black text */
+    border-radius: 8px;        /* optional rounded corners */
+}
+
+
+.custom-alert-logout.show {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.custom-alert-logout .custom-alert-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.custom-alert-logout .custom-alert-header strong {
+    font-size: 1.8rem; /* bigger header */
+}
+
+.custom-alert-logout .custom-alert-body {
+    font-size: 1.2rem; /* bigger body text */
+    line-height: 1.5;
+    color: #000;
+}
+
+/* Yes & No buttons inside logout popup */
+.custom-alert-logout button {
+    font-size: 1.2rem; /* bigger buttons */
+    padding: 0.8rem 2rem; /* bigger clickable area */
+    font-weight: 700;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.custom-alert-logout #logout-yes {
+    background-color: #2c7a2c; /* green */
+    color: #fff; /* white text */
+    border: 2px solid #1b5e1b;
+}
+
+.custom-alert-logout #logout-yes:hover {
+    background-color: #1b5e1b;
+}
+
+.custom-alert-logout #logout-no {
+    background-color: #f44336; /* red */
+    color: #fff; /* white text */
+    border: 2px solid #b71c1c;
+}
+
+.custom-alert-logout #logout-no:hover {
+    background-color: #b71c1c;
+}

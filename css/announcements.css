@@ -1,0 +1,234 @@
+/* ========================================
+   VARIABLES (Facebook Colors)
+   ======================================== */
+:root {
+  --primary-green: #1877f2;     /* Facebook Blue */
+  --secondary-green: #dfdede;   /* Facebook Light Gray Background */
+  --white: #ffffff;
+  --accent-yellow: #a7a7a7;     /* FB card separators / light gray accents */
+  --text-dark: #1c1e21;         /* FB dark text */
+  --text-light: #65676b;        /* FB secondary text */
+  --btn-hover: #165ecc;         /* FB hover blue */
+  --card-shadow: rgba(0, 0, 0, 0.08);
+  --transition-speed: 0.3s;
+}
+
+
+/* ========================================
+   RESET & BASE
+   ======================================== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Inter", system-ui, Arial, sans-serif;
+  background-color: var(--secondary-green);
+  color: var(--text-dark);
+  line-height: 1.6;
+  min-height: 100vh; /* ensures footer sticks at bottom */
+  display: flex;
+  flex-direction: column;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+  flex: 1; /* main content grows to push footer down */
+}
+
+/* ========================================
+   LOGOUT / ALERT MESSAGE
+   ======================================== */
+.logout-message, .alert-error {
+  background-color: #e6f7e6;
+  border-left: 6px solid var(--accent-yellow);
+  padding: 1rem 1.5rem;
+  margin: 1.5rem auto;
+  width: 90%;
+  max-width: 600px;
+  box-shadow: 0 2px 6px var(--card-shadow);
+}
+
+.alert-error {
+  background-color: #fff1f0;
+  border-left-color: #f44336;
+  color: #b71c1c;
+}
+
+/* ========================================
+   ANNOUNCEMENTS SECTION
+   ======================================== */
+.announcements-section {
+  margin-bottom: 3rem;
+}
+
+.announcements-section h3 {
+  font-size: 1.5rem;
+  color: var(--primary-green);
+  margin-bottom: 1rem;
+  border-bottom: 3px solid var(--accent-yellow);
+  padding-bottom: 0.4rem;
+}
+
+.announcements-scroll {
+  display: flex;
+  overflow-x: auto;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  scroll-behavior: smooth;
+}
+
+.announcements-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+
+.announcements-scroll::-webkit-scrollbar-thumb {
+  background-color: var(--accent-yellow);
+}
+
+.announcement-card-resident {
+  min-width: 250px;
+  background-color: var(--white);
+  padding: 1rem;
+  box-shadow: 0 4px 12px var(--card-shadow);
+  transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+  flex-shrink: 0;
+}
+
+.announcement-card-resident:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px var(--card-shadow);
+}
+
+.announcement-header-resident h4 {
+  color: var(--primary-green);
+  margin-bottom: 0.3rem;
+  font-size: 1.1rem;
+}
+
+.announcement-date-resident {
+  font-size: 0.85rem;
+  color: var(--text-light);
+}
+
+/* ========================================
+   STICKY FOOTER
+   ======================================== */
+footer {
+  flex-shrink: 0;
+  background-color: var(--primary-green);
+  color: var(--white);
+  text-align: center;
+  padding: 1rem 0;
+}
+
+/* ========================================
+   ANNOUNCEMENTS (Facebook Style, No Border Radius)
+   ======================================== */
+.announcements-public-section {
+  max-width: 1100px;
+  margin: 2rem auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.announcement-card {
+  background-color: #fff;
+  padding: 1.5rem 1.8rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s, transform 0.2s;
+}
+
+.announcement-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+/* ========================================
+   ANNOUNCEMENT PROFILE PHOTO (FB Style)
+   ======================================== */
+.announcement-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.8rem; /* space between avatar and title */
+  margin-bottom: 0.8rem;
+}
+
+.announcement-header img {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 50%; /* circular profile photo */
+  flex-shrink: 0;
+}
+
+.announcement-header h3 {
+  font-size: 1.3rem; /* bigger title */
+  font-weight: 600;
+  color: #1877f2; /* FB blue */
+  margin: 0; /* remove spacing since inline with avatar */
+}
+
+.announcement-date {
+  font-size: 0.85rem;
+  color: #555;
+  margin-left: auto; /* push date to right */
+}
+
+.announcement-body p {
+  margin-top: 0.6rem;
+  font-size: 1rem; /* slightly bigger text */
+  color: #1c1e21;
+  line-height: 1.5;
+}
+
+.announcement-actions {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.announcement-actions .btn {
+  font-size: 0.85rem;
+  padding: 0.4rem 0.7rem;
+  border-radius: 0; /* remove radius completely */
+}
+
+/* Empty State FB Style */
+.empty-state {
+  text-align: center;
+  padding: 2.5rem;
+  font-style: italic;
+  font-size: 1rem;
+  color: #555;
+  background-color: #f0f2f5;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .announcements-public-section {
+    width: 95%;
+    margin: 1rem auto;
+  }
+  .announcement-card {
+    padding: 1.2rem 1.4rem;
+  }
+  .announcement-header h3 {
+    font-size: 1.2rem;
+  }
+  .announcement-body p {
+    font-size: 0.98rem;
+  }
+}

@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $_SESSION['resident_name'] = $resident['full_name'];
                     $_SESSION['login_success'] = true;
                     $_SESSION['success_message'] = "Welcome back, " . htmlspecialchars($resident['full_name']) . "! You have successfully logged in.";
-                    header('Location: Dashboard.php');
+                    header('Location: landing.php');
                     exit;
                 } else {
                     $error = "There is an issue with your account status. Please contact the barangay office.";
