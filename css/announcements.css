@@ -202,7 +202,6 @@ footer {
 .announcement-actions .btn {
   font-size: 0.85rem;
   padding: 0.4rem 0.7rem;
-  border-radius: 0; /* remove radius completely */
 }
 
 /* Empty State FB Style */

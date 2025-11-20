@@ -67,7 +67,7 @@ if (isset($_SESSION['success_message'])) {
 <head>
   <meta charset="UTF-8">
   <title>Admin Dashboard</title>
-  <link rel="stylesheet" href="../css/admin_dashboardss.css">
+  <link rel="stylesheet" href="../css/admin.css">
 
   <!-- DataTables -->
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css">
@@ -100,9 +100,6 @@ if (isset($_SESSION['success_message'])) {
           else echo "All Requests";
           ?>
         </h1>
-        <div class="admin-actions">
-          <a href="../logout.php" class="btn outline small">Logout</a>
-        </div>
       </header>
 
       <?php if (!empty($error)): ?>
@@ -172,7 +169,6 @@ if (isset($_SESSION['success_message'])) {
     </main>
   </div>
 
-  <?php include 'adminchat.php'; ?>
 
   <script>
     // Suppress DataTables warnings (show in console instead of alert)
