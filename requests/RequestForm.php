@@ -37,13 +37,22 @@ $residentId = $_SESSION['resident_id'];
 $error = '';
 $success = '';
 
+$requestTypes = [
+    'Barangay Clearance',
+    'Cedula',
+    'Certificate of Indigency',
+    'Certificate of Residency'
+];
+$selectedType = $_POST['requestType'] ?? '';
+$detailsValue = $_POST['details'] ?? '';
+
 if($_SERVER['REQUEST_METHOD'] === 'POST'){
-    $type = trim($_POST['requestType']);
+    $type = trim($_POST['requestType'] ?? '');
     $details = trim($_POST['details']);
 
     // Validate inputs
-    if (empty($type)) {
-        $error = "Please select the type of document you need.";
+    if (empty($type) || !in_array($type, $requestTypes, true)) {
+        $error = "Please select the document you need.";
     } elseif (empty($details)) {
         $error = "Please tell us the purpose of your request.";
     } elseif (strlen($details) < 10) {
@@ -51,7 +60,6 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
     } else {
         // Validate file uploads
         $uploadId = $_FILES['uploadId'];
-        $uploadResidency = $_FILES['uploadResidency'];
 
         if ($uploadId['error'] !== UPLOAD_ERR_OK) {
             switch ($uploadId['error']) {
@@ -65,28 +73,13 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
                 default:
                     $error = "There was a problem uploading your ID. Please try again.";
             }
-        } elseif ($uploadResidency['error'] !== UPLOAD_ERR_OK) {
-            switch ($uploadResidency['error']) {
-                case UPLOAD_ERR_INI_SIZE:
-                case UPLOAD_ERR_FORM_SIZE:
-                    $error = "Your residency certificate file is too large. Please upload a file smaller than 5MB.";
-                    break;
-                case UPLOAD_ERR_NO_FILE:
-                    $error = "Please upload your barangay certificate of residency.";
-                    break;
-                default:
-                    $error = "There was a problem uploading your residency certificate. Please try again.";
-            }
         } else {
             // Validate file types
             $allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
             $idFileType = mime_content_type($uploadId['tmp_name']);
-            $residencyFileType = mime_content_type($uploadResidency['tmp_name']);
 
             if (!in_array($idFileType, $allowedTypes)) {
                 $error = "Your ID must be a JPG, PNG, or PDF file.";
-            } elseif (!in_array($residencyFileType, $allowedTypes)) {
-                $error = "Your residency certificate must be a JPG, PNG, or PDF file.";
             } else {
                 // Create uploads directory if it doesn't exist
                 $uploadDir = "../uploads/";
@@ -96,13 +89,11 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
 
                 // Generate unique filenames
                 $idFileName = uniqid() . '_' . basename($uploadId['name']);
-                $residencyFileName = uniqid() . '_' . basename($uploadResidency['name']);
+                $residencyFileName = '';
 
                 // Move uploaded files
                 if (!move_uploaded_file($uploadId['tmp_name'], $uploadDir . $idFileName)) {
                     $error = "Failed to save your ID file. Please try again.";
-                } elseif (!move_uploaded_file($uploadResidency['tmp_name'], $uploadDir . $residencyFileName)) {
-                    $error = "Failed to save your residency certificate. Please try again.";
                 } else {
                     try {
                         $stmt = $conn->prepare("CALL createRequest(?, ?, ?, ?, ?)");
@@ -132,7 +123,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Request Service</title>
+  <title>Request Service</title>
 <link rel="stylesheet" href="../css/header.css">
 <link rel="stylesheet" href="../css/footer.css">
 <link rel="stylesheet" href="../css/style.css">
@@ -155,64 +146,46 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
 <h2>Request a Document</h2>
 <form method="POST" enctype="multipart/form-data" id="requestForm">
 
-<div class="step" data-step="1">
 <label>Full Name
 <input type="text" value="<?= $_SESSION['resident_name'] ?>" readonly>
 </label>
 
-<label>Type of Request
+<label>Type of Document Needed
 <select name="requestType" required>
 <option value="">Select Request Type</option>
-<option>Barangay Certificate</option>
-<option>Barangay Clearance</option>
-<option>Business Permits and Licenses</option>
-<option>Applying for a Passport</option>
-<option>Clearance Certificates</option>
-<option>Employment</option>
-<option>Government Documents Application</option>
-<option>Identification</option>
-<option>Proof of Address</option>
+<?php foreach ($requestTypes as $typeOption): ?>
+  <option value="<?php echo htmlspecialchars($typeOption); ?>" <?php echo ($selectedType === $typeOption) ? 'selected' : ''; ?>>
+    <?php echo htmlspecialchars($typeOption); ?>
+  </option>
+<?php endforeach; ?>
 </select>
 </label>
 
-<div class="actions">
-<button type="button" id="next1" class="btn">Next</button>
-</div>
-</div>
-
-<div class="step step-hidden" data-step="2">
 <label>Purpose / Details
-<textarea name="details" rows="4" required></textarea>
+<textarea name="details" rows="4" required><?php echo htmlspecialchars($detailsValue); ?></textarea>
 </label>
 
 <label>Upload Valid ID (Required)
 <input type="file" name="uploadId" accept=".jpg,.jpeg,.png,.pdf" required>
 </label>
 
-<label>Barangay Certificate of Residency (Required)
-<input type="file" name="uploadResidency" accept=".jpg,.jpeg,.png,.pdf" required>
-</label>
-
 <div class="actions">
-<button type="button" id="back2" class="btn outline">Back</button>
 <button type="submit" class="btn">Submit Request</button>
-</div>
 </div>
 
 </form>
 </div>
 </main>
+    
+<div class="hero-actions">
+<!-- Back Button aligned right -->
+<div style="margin-bottom: 2rem; text-align: right;">
+    <a href="../residents/Dashboard.php" class="btn outline">← Back to Dashboard</a>
+</div>
+
+</div>
 
 <script src="../js/appear.js"></script>
-<script>
-let step = 1;
-const steps = document.querySelectorAll('.step');
-const showStep = n => {
-    steps.forEach(s=>s.style.display = s.dataset.step == n ? 'block' : 'none');
-}
-document.getElementById('next1').onclick = ()=>{step=2; showStep(step);}
-document.getElementById('back2').onclick = ()=>{step=1; showStep(step);}
-</script>
 
 <?php include '../includes/footer.php'; ?>
 </body>

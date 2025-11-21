@@ -93,15 +93,19 @@ if (isset($_SESSION['success_message'])) {
 
     <main class="admin-main">
       <header class="admin-top">
-        <h1>
-          <?php
-          if ($filterType === 'registration') echo "Registration Requests";
-          elseif ($filterType === 'document') echo "Document Requests";
-          else echo "All Requests";
-          ?>
-        </h1>
+        <div>
+          <p class="muted">Welcome back, Admin</p>
+          <h1>
+            <?php
+            if ($filterType === 'registration') echo "Registration Requests";
+            elseif ($filterType === 'document') echo "Document Requests";
+            else echo "All Requests";
+            ?>
+          </h1>
+        </div>
         <div class="admin-actions">
-          <a href="../logout.php" class="btn outline small">Logout</a>
+          <a href="DocumentRequests.php" class="btn">Manage Document Requests</a>
+          <a href="../logoutadmin.php" class="btn outline small">Logout</a>
         </div>
       </header>
 
@@ -137,6 +141,22 @@ if (isset($_SESSION['success_message'])) {
           <p><?php echo htmlspecialchars($success); ?></p>
         </div>
       <?php endif; ?>
+
+      <!-- Statistics Cards -->
+      <section class="stats-grid">
+        <div class="stat-card">
+          <h3><?php echo $pending; ?></h3>
+          <p>Pending Requests</p>
+        </div>
+        <div class="stat-card">
+          <h3><?php echo $approved; ?></h3>
+          <p>Approved Requests</p>
+        </div>
+        <div class="stat-card">
+          <h3><?php echo $rejected; ?></h3>
+          <p>Rejected Requests</p>
+        </div>
+      </section>
 
       <!-- Requests Table -->
       <section id="requestsTable">

@@ -48,10 +48,19 @@ if ($isAdmin && isset($_POST['delete_announcement'])) {
     }
 }
 
-// Get all announcements
+// Get filter dates
+$from_date = isset($_GET['from_date']) ? $_GET['from_date'] : '';
+$to_date = isset($_GET['to_date']) ? $_GET['to_date'] : '';
+
+// Get announcements (filtered if dates are set)
 try {
-    $stmt = $pdo->prepare("CALL getAllAnnouncements()");
-    $stmt->execute();
+    if ($from_date && $to_date) {
+        $stmt = $pdo->prepare("SELECT * FROM announcements WHERE DATE(created_at) BETWEEN ? AND ? ORDER BY created_at DESC");
+        $stmt->execute([$from_date, $to_date]);
+    } else {
+        $stmt = $pdo->prepare("CALL getAllAnnouncements()");
+        $stmt->execute();
+    }
     $announcements = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     $announcements = [];
@@ -78,26 +87,25 @@ if (isset($_SESSION['success_message'])) {
 </head>
 <body <?php if ($success) echo 'data-success-message="' . htmlspecialchars($success) . '"'; ?>>
 
-  <?php if ($isAdmin): ?>
-    <!-- Admin Layout with Sidebar -->
-    <div class="admin-layout">
-      <?php include __DIR__ . '/../admin/sidebar.php'; ?>
+<?php if ($isAdmin): ?>
+  <!-- Admin Layout with Sidebar -->
+  <div class="admin-layout">
+    <?php include __DIR__ . '/../admin/sidebar.php'; ?>
 
-      <main class="admin-main">
-        <header class="admin-header">
-          <h1>📢 Announcements</h1>
-          <div class="admin-user">
-            <span>👤 <?php echo htmlspecialchars($_SESSION['admin_name']); ?></span>
-            <a href="../logout.php" class="btn small">Logout</a>
-          </div>
-        </header>
+    <main class="admin-main">
+      <header class="admin-header">
+        <h1>📢 Announcements</h1>
+        <div class="admin-user">
+          <span>👤 <?php echo htmlspecialchars($_SESSION['admin_name']); ?></span>
+        </div>
+      </header>
 
-        <div class="admin-content">
-  <?php else: ?>
-    <!-- Regular User Layout -->
-    <?php include '../includes/headerinner.php'; ?>
-    <main class="container">
-  <?php endif; ?>
+      <div class="admin-content">
+<?php else: ?>
+  <!-- Regular User Layout -->
+  <?php include '../includes/headerinner.php'; ?>
+  <main class="container">
+<?php endif; ?>
     <?php if (!$isAdmin): ?>
       <div class="header-inner">
         <h2>📢 Barangay Announcements</h2>
@@ -144,6 +152,24 @@ if (isset($_SESSION['success_message'])) {
         </form>
       </section>
     <?php endif; ?>
+
+    <!-- Filter Announcements by Date -->
+    <section class="announcement-filter-section">
+      <form method="GET" class="announcement-filter-form">
+        <div class="form-group">
+          <label for="from_date">From Date:</label>
+          <input type="date" id="from_date" name="from_date" value="<?php echo htmlspecialchars($from_date); ?>" class="form-input">
+        </div>
+
+        <div class="form-group">
+          <label for="to_date">To Date:</label>
+          <input type="date" id="to_date" name="to_date" value="<?php echo htmlspecialchars($to_date); ?>" class="form-input">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Filter</button>
+        <a href="AnnouncementsList.php" class="btn outline">Reset</a>
+      </form>
+    </section>
 
     <!-- Announcements List -->
     <section class="announcements-public-section">

@@ -326,19 +326,6 @@ BEGIN
 END$$
 DELIMITER ;
 
--- Update resident password
-DELIMITER $$
-CREATE PROCEDURE `updateResidentPassword` (
-    IN p_resident_id INT,
-    IN p_hashed_password VARCHAR(255)
-)
-BEGIN
-    UPDATE residents
-    SET resident_password = p_hashed_password
-    WHERE id = p_resident_id;
-END$$
-DELIMITER ;
-
 -- ========================================
 -- ADMIN PROCEDURES
 -- ========================================
@@ -372,19 +359,6 @@ CREATE PROCEDURE `updateRequestStatus` (
 )
 BEGIN
     UPDATE requests SET status = p_status WHERE id = p_request_id;
-END$$
-DELIMITER ;
-
--- Update admin password
-DELIMITER $$
-CREATE PROCEDURE `updateAdminPassword` (
-    IN p_admin_id INT,
-    IN p_hashed_password VARCHAR(255)
-)
-BEGIN
-    UPDATE admins
-    SET password = p_hashed_password
-    WHERE id = p_admin_id;
 END$$
 DELIMITER ;
 

@@ -85,6 +85,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </div>
 
 <main class="container auth-page">
+<div class="backlogin">
+<img src="../assets/img/logo.png" alt="logo">
     <div class="auth-card">
         <h2>🔐 Admin Login</h2>
         <p class="auth-subtitle">Administrator Access Only</p>
@@ -122,6 +124,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <a href="../index.php" class="back-link">← Back to Home</a>
         </div>
     </div>
+</div>
 </main>
 <?php include '../includes/footer.php'; ?>
 </body>

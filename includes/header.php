@@ -1,19 +1,53 @@
-<?php
+<?php 
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
+$current_page = basename($_SERVER['PHP_SELF']);
 ?>
 <header class="site-header">
     <div class="container header-inner">
         <div class="brand">Bagong Pook Community Service Request</div>
-        <nav class="nav">
+
+        <!-- Original nav links -->
+        <nav class="nav original-nav">
             <a href="index.php">Home</a>
             <a href="#services" class="services-link">Services</a>
-            <a href="announcements/AnnouncementsList.php">Announcements</a>
+
+            <?php if ($current_page !== 'AnnouncementsList.php') : ?>
+                <a href="announcements/AnnouncementsList.php">Announcements</a>
+            <?php endif; ?>
 
             <?php
-
             if (isset($_SESSION['resident_id'])) {
+                echo '<a href="residents/Dashboard.php" class="btn small">Dashboard</a>';
+                echo '<a href="logout.php" class="btn small outline">Logout</a>';
+            } elseif (isset($_SESSION['admin_id'])) {
+                echo '<a href="logout.php" class="btn small outline">Logout</a>';
+            } else {
+                echo '<a href="residents/Login.php" class="btn small">Login</a>';
+            }
+            ?>
+        </nav>
+
+        <!-- Hamburger icon -->
+        <div class="hamburger" id="hamburger1">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <!-- Dropdown nav for hamburger -->
+        <nav class="nav dropdown-nav" id="dropdown1">
+            <a href="index.php">Home</a>
+            <a href="#services" class="services-link">Services</a>
+
+            <?php if ($current_page !== 'AnnouncementsList.php') : ?>
+                <a href="announcements/AnnouncementsList.php">Announcements</a>
+            <?php endif; ?>
+
+            <?php
+            if (isset($_SESSION['resident_id'])) {
+                echo '<a href="residents/Dashboard.php" class="btn small">Dashboard</a>';
                 echo '<a href="logout.php" class="btn small outline">Logout</a>';
             } elseif (isset($_SESSION['admin_id'])) {
                 echo '<a href="logout.php" class="btn small outline">Logout</a>';
@@ -24,3 +58,8 @@ if (session_status() == PHP_SESSION_NONE) {
         </nav>
     </div>
 </header>
+
+<link rel="stylesheet" href="../css/include.css">
+<link rel="stylesheet" href="css/include.css">
+<script src="../js/hamburger.js"></script>
+<script src="js/hamburger.js"></script>

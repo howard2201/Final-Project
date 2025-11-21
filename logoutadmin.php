@@ -37,7 +37,7 @@ if (!isset($_GET['confirm'])) {
 
             document.getElementById('logout-no').addEventListener('click', function(){
                 // Close popup and go back to homepage
-                window.location.href = "index.php";
+                window.location.href = "admin/AdminDashboard.php";
             });
         </script>
     </body>

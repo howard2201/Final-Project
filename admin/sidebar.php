@@ -14,9 +14,11 @@
           <a href="../admin/AdminDashboard.php">All Requests</a>
         </div>
       </div>
+      <a href="../admin/DocumentRequests.php">Document Requests</a>
       <a href="../admin/ResidentApprovals.php">Resident Approvals</a>
       <a href="../admin/AttendanceView.php">Attendance</a>
       <a href="../announcements/AnnouncementsList.php">Announcements</a>
+      <a href="../logoutadmin.php" class="btn outline small">Logout</a>
     </div>
   </nav>
 </aside>

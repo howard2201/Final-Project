@@ -80,6 +80,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <?php endif; ?>
 
 <main class="container auth-page">
+<div class="backlogin">
+  <img src="../assets/img/logo.png" alt="logo">
   <div class="auth-card">
     <h2>Resident Login</h2>
     <?php if(isset($error)): ?>
@@ -111,7 +113,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <a href="../admin/AdminLogin.php">🔐 Admin Login</a>
     </div>
   </div>
+</div>
 </main>
+<script src="../js/responsive.js"></script>
 
 <?php include '../includes/footer.php'; ?>
 </body>

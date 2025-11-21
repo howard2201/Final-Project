@@ -175,6 +175,24 @@ try {
             }
         }
     }
+
+    // Additional Filter Logic
+    $fromDate = isset($_GET['from_date']) ? trim($_GET['from_date']) : '';
+    $toDate = isset($_GET['to_date']) ? trim($_GET['to_date']) : '';
+    $empNumber = isset($_GET['emp_number']) ? trim($_GET['emp_number']) : '';
+
+    if ($fromDate || $toDate || $empNumber) {
+        $filteredRecords = array_filter($filteredRecords, function($record) use ($fromDate, $toDate, $empNumber) {
+            $recordDate = !empty($record['time_in']) ? date('Y-m-d', strtotime($record['time_in'])) : '';
+            $match = true;
+
+            if ($fromDate && $recordDate < $fromDate) $match = false;
+            if ($toDate && $recordDate > $toDate) $match = false;
+            if ($empNumber && stripos($record['name'], $empNumber) === false && stripos($recordDate, $empNumber) === false) $match = false;
+
+            return $match;
+        });
+    }
 } catch (Exception $e) {
     error_log("AttendanceView error: " . $e->getMessage());
     $error = "An error occurred while retrieving attendance records.";
@@ -234,6 +252,10 @@ try {
       margin-bottom: 1rem;
       border-left: 4px solid #3c3;
     }
+    .profile-pic { width: 40px; height: 40px; object-fit: cover; border-radius: 50%; }
+    /* New filter styling */
+    .filter-wrapper input { padding: 0.4rem 0.6rem; border-radius: 4px; border:1px solid #ccc; }
+    .filter-wrapper label { display:block; font-size:0.9rem; margin-bottom:0.2rem; }
   </style>
 </head>
 
@@ -244,9 +266,6 @@ try {
     <main class="admin-main">
       <header class="admin-top">
         <h1>Attendance Management</h1>
-        <div class="admin-actions">
-          <a href="../logout.php" class="btn outline small">Logout</a>
-        </div>
       </header>
 
       <!-- Error Message Display -->
@@ -300,6 +319,41 @@ try {
             <?php if (!empty($searchDate)): ?>
               <a href="AttendanceView.php" class="btn outline small">Clear</a>
             <?php endif; ?>
+          </form>
+        </div>
+
+        <!-- Additional Search Filters -->
+        <div class="search-section" style="margin-top:1.5rem;">
+          <form method="GET">
+            <div class="filter-wrapper" style="display:flex; gap:1rem; flex-wrap:wrap; align-items:center;">
+
+              <!-- From Date -->
+              <div class="filter-item">
+                <label for="from_date">From Date:</label>
+                <input type="date" id="from_date" name="from_date" class="form-control" 
+                       value="<?php echo isset($_GET['from_date']) ? htmlspecialchars($_GET['from_date'], ENT_QUOTES, 'UTF-8') : ''; ?>">
+              </div>
+
+              <!-- To Date -->
+              <div class="filter-item">
+                <label for="to_date">To Date:</label>
+                <input type="date" id="to_date" name="to_date" class="form-control"
+                       value="<?php echo isset($_GET['to_date']) ? htmlspecialchars($_GET['to_date'], ENT_QUOTES, 'UTF-8') : ''; ?>">
+              </div>
+
+              <!-- Employee Number / Date -->
+              <div class="filter-item">
+                <label for="emp_number">Employee Number:</label>
+                <input type="text" id="emp_number" name="emp_number" class="form-control"
+                       placeholder="Enter Employee Number"
+                       value="<?php echo isset($_GET['emp_number']) ? htmlspecialchars($_GET['emp_number'], ENT_QUOTES, 'UTF-8') : ''; ?>">
+              </div>
+
+              <button type="submit" class="btn">Search</button>
+              <?php if (!empty($_GET['from_date']) || !empty($_GET['to_date']) || !empty($_GET['emp_number'])): ?>
+                <a href="AttendanceView.php" class="btn outline small">Clear</a>
+              <?php endif; ?>
+            </div>
           </form>
         </div>
 

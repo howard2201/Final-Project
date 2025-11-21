@@ -133,6 +133,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <?php endif; ?>
 
 <main class="container auth-page">
+  <div class="backlogin">
+  <img src="../assets/img/logo.png" alt="logo">
   <div class="auth-card">
     <h2>Create an Account</h2>
     <?php if(!empty($error)): ?>
@@ -163,7 +165,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </div>
     </form>
   </div>
+  </div>
 </main>
+<script src="../js/responsive.js"></script>
 
 <?php include '../includes/footer.php'; ?>
 </body>
