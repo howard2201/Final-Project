@@ -1,0 +1,175 @@
+<?php
+//first page
+session_start();
+
+// Validate existing sessions
+if (isset($_SESSION['resident_id']) || isset($_SESSION['admin_id'])) {
+    require_once 'config/Database.php';
+    $pdo = Database::getInstance()->getConnection();
+
+    if (isset($_SESSION['resident_id'])) {
+        try {
+            // Validate resident session using stored procedure
+            $stmt = $pdo->prepare("CALL getResidentById(?)");
+            $stmt->execute([$_SESSION['resident_id']]);
+            $resident = $stmt->fetch(PDO::FETCH_ASSOC);
+            $stmt->closeCursor();
+
+            // If resident doesn't exist or is not approved, clear session
+            if (!$resident || $resident['approval_status'] !== 'Approved') {
+                unset($_SESSION['resident_id']);
+                unset($_SESSION['resident_name']);
+                unset($_SESSION['login_success']);
+            }
+        } catch (PDOException $e) {
+            error_log("Session validation error: " . $e->getMessage());
+            unset($_SESSION['resident_id']);
+            unset($_SESSION['resident_name']);
+            unset($_SESSION['login_success']);
+        }
+    }
+
+    if (isset($_SESSION['admin_id'])) {
+        try {
+            // Validate admin session using stored procedure
+            $stmt = $pdo->prepare("CALL getAdminById(?)");
+            $stmt->execute([$_SESSION['admin_id']]);
+            $admin = $stmt->fetch(PDO::FETCH_ASSOC);
+            $stmt->closeCursor();
+
+            // If admin doesn't exist, clear session
+            if (!$admin) {
+                unset($_SESSION['admin_id']);
+                unset($_SESSION['admin_name']);
+                unset($_SESSION['admin_email']);
+            }
+        } catch (PDOException $e) {
+            error_log("Admin session validation error: " . $e->getMessage());
+            unset($_SESSION['admin_id']);
+            unset($_SESSION['admin_name']);
+            unset($_SESSION['admin_email']);
+        }
+    }
+}
+
+// Get logout message if any
+$logoutMessage = '';
+if (isset($_SESSION['logout_message'])) {
+    $logoutMessage = $_SESSION['logout_message'];
+    unset($_SESSION['logout_message']);
+}
+?>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Smart Barangay System for Streamlined Community Service Requests with SMS Notifications</title>
+  <link rel="stylesheet" href="css/residents.css">
+</head>
+<body>
+
+<?php include 'includes/header.php'; ?>
+
+<?php if(!empty($logoutMessage)): ?>
+<div class="logout-message">
+  <strong>✓ Logged Out</strong>
+  <p><?php echo htmlspecialchars($logoutMessage); ?></p>
+</div>
+<?php endif; ?>
+
+<main>
+    <section class="hero">
+      <div class="container hero-inner">
+        <div class="hero-copy">
+          <h1>Faster, easier barangay services</h1>
+          <p>Request certificates, track submissions, and get announcements — all online.</p>
+          <div class="hero-actions">
+            <?php
+              if (isset($_SESSION['resident_id'])) {
+                echo '<a href="requests/RequestForm.php" class="btn">Request a Document</a>';
+              }
+              if (!isset($_SESSION['resident_id'])) {
+                echo '<a href="residents/Login.php" class="btn outline">Resident Login</a>';
+              }
+            ?>
+          </div>
+        </div>
+        <div class="hero-image">
+          <img src="assets/img/logo.png" alt="logo">
+        </div>
+      </div>
+    </section>
+
+    <section id="services" class="features container">
+      <h2>Services</h2>
+      <div class="scroll-cards">
+        <div class="card">
+          <h3>Barangay Certificate</h3>
+          <p>Request an official document verifying your residency within the barangay.</p>
+        </div>
+        <div class="card">
+          <h3>Barangay Clearance</h3>
+          <p>Apply for a barangay clearance for employment, business, or personal use.</p>
+        </div>
+        <div class="card">
+          <h3>Business Permits and Licenses</h3>
+          <p>Submit requirements for business permits and renew existing licenses.</p>
+        </div>
+        <div class="card">
+          <h3>Applying for a Passport</h3>
+          <p>Get barangay certification support for passport application requirements.</p>
+        </div>
+        <div class="card">
+          <h3>Clearance Certificates</h3>
+          <p>Request barangay-issued clearances for various official purposes.</p>
+        </div>
+        <div class="card">
+          <h3>Employment</h3>
+          <p>Obtain barangay documents needed for job applications or verification.</p>
+        </div>
+        <div class="card">
+          <h3>Government Documents Application</h3>
+          <p>Assistance in securing NBI, Police, or Birth Certificates at the barangay level.</p>
+        </div>
+        <div class="card">
+          <h3>Identification</h3>
+          <p>Apply for a barangay ID or request verification for lost or new IDs.</p>
+        </div>
+        <div class="card">
+          <h3>Proof of Address</h3>
+          <p>Request documents proving your official address within the barangay.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="history-section container">
+      <h2>About Our Barangay</h2>
+      <button id="openHistory" class="btn outline">View Barangay History</button>
+    </section>
+</main>
+
+<div id="historyModal" class="modal">
+    <div class="modal-content">
+      <span id="closeHistory" class="close">&times;</span>
+      <h2>Barangay History</h2>
+      <p>
+        “Banaba” was established in 1883, a small barrio, 1/2 miles away from Taal Lake and the enthralling 
+        “Ramandan Falls”. In ancient times, natives here built a “pandayan” – 
+        a craft with expertise in metal carvings and furniture making using irons as their source of livelihood. 
+        In 1867 – 1869, there was an increase in the number of coffee growers as they opted to plant coffee as their major source of living. 
+        However, in dry seasons, natives were forced to evacuate to the nearby plains called 
+        “Nueva Villa” which was later renamed to “Bagong Pook” and currently houses Nestle Philippines, Inc., 
+        the first food industry in Lipa City.
+        <img src="assets/img/brgy-info.png" alt="info" width="500">
+        <img src="assets/img/brgy-info2.png" alt="info" width="500">
+      </p>
+    </div>
+</div>
+
+<?php include 'includes/footer.php'; ?>
+
+<script src="js/appear.js"></script>
+<script src="js/smooth-scroll.js"></script>
+</body>
+</html>

@@ -1,0 +1,247 @@
+/* ========================================
+   HEADER
+   ======================================== */
+.site-header {
+  background-color: var(--primary-green);
+  color: var(--white);
+  padding: 1rem 0;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  border-bottom: 3px solid var(--accent-yellow);
+}
+
+.header-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative; /* added for dropdown positioning */
+}
+
+.header-inner .brand {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--white);
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.nav a {
+  color: var(--white);
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  transition: all var(--transition-speed);
+}
+
+.nav a:hover {
+  background-color: var(--accent-yellow);
+  color: var(--primary-green);
+  transform: translateY(-1px);
+}
+
+.nav .btn {
+  background-color: var(--white);
+  color: var(--primary-green);
+  padding: 0.4rem 0.8rem;
+  font-weight: 600;
+  transition: all var(--transition-speed);
+}
+
+.nav .btn.outline {
+  background-color: transparent;
+  border: 2px solid var(--white);
+  color: var(--white);
+}
+
+.nav .btn.outline:hover {
+  background-color: var(--white);
+  color: var(--primary-green);
+}
+
+/* ========================================
+   HAMBURGER & DROPDOWN (Updated)
+   ======================================== */
+/* Hamburger icon */
+/* Hamburger icon on the far left */
+.hamburger {
+    display: none; /* hidden by default, shown on mobile */
+    flex-direction: column;
+    justify-content: space-between;
+    width: 35px;
+    height: 30px;
+    cursor: pointer;
+    z-index: 1010;
+
+    /* Move to far left */
+    position: absolute;
+    right: 1rem; /* adjust distance from left edge */
+    top: 50%;
+    transform: translateY(-50%); /* vertically center */
+}
+
+.hamburger span {
+    display: block;
+    height: 4px;
+    background-color: var(--white);
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+.hamburger.active span:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 13px); /* moved slightly more down */
+}
+
+.hamburger.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(5px, -13px); /* moved slightly more up */
+}
+
+/* Dropdown nav aligned directly under hamburger (far left) with animation */
+.dropdown-nav {
+    padding: 20px;
+    display: none; /* hidden by default */
+    flex-direction: column;
+    position: absolute;
+    top: 100%;      /* below hamburger */
+    right: -30px;   /* adjust if needed */
+    width: 200px;   /* fixed width */
+    background-color: var(--primary-green);
+    z-index: 9999;
+
+    border-bottom: 3px solid var(--accent-yellow);
+    border-left: 3px solid var(--accent-yellow);
+    border-right: 3px solid var(--accent-yellow);
+
+    box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+    overflow: hidden;
+
+    /* initial hidden state for animation */
+    opacity: 0;
+    transform: translateY(-20px); /* start slightly above */
+    pointer-events: none;         /* prevent interaction when hidden */
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* Show dropdown with slide-down animation */
+.dropdown-nav.show {
+    display: flex; /* show when active */
+    opacity: 1;
+    margin-top: 16px;
+    transform: translateY(0); /* slide into place */
+    pointer-events: auto;     /* allow interaction */
+}
+
+/* Dropdown links styled as equal-size buttons */
+.dropdown-nav a {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%; /* full width */
+    padding: 0.8rem 1rem;
+    text-align: center;
+    color: var(--primary-green);
+    background-color: #ffffff; /* light green for contrast */
+    text-decoration: none;
+    font-weight: 600;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+/* Remove border for last link */
+.dropdown-nav a:last-child {
+    border-bottom: none;
+}
+
+/* Hover effect: slide UP instead of right */
+.dropdown-nav a:hover {
+    background-color: #d4f4c1; /* slightly brighter green */
+    color: var(--primary-green);
+    font-weight: 700;
+    transform: translateY(-3px); /* moves upward on hover */
+}
+
+/* Ensure dropdown disappears when screen is large */
+@media (min-width: 769px) {
+    .dropdown-nav {
+        display: none !important;
+        opacity: 0 !important;
+    }
+}
+
+/* ========================================
+   FOOTER
+   ======================================== */
+.site-footer {
+  margin-top: 300px;
+  background-color: var(--primary-green);
+  color: var(--white);
+  padding: 2rem 0 1rem;
+  text-align: center;
+  box-shadow: 0 -2px 6px rgba(0,0,0,0.08);
+  border-top: 3px solid var(--accent-yellow);
+}
+
+.site-footer h4 {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.site-footer p {
+  font-size: 0.95rem;
+  margin-bottom: 0.3rem;
+}
+
+.footer-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 2rem;
+  max-width: 1000px;
+  margin: 0 auto 1rem;
+}
+
+.site-footer .copyright {
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-top: 1rem;
+  color: #e0e0e0;
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+@media (max-width: 768px) {
+  .header-inner {
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .nav {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .footer-grid {
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  /* Hide original nav and show hamburger */
+  .original-nav {
+      display: none;
+  }
+  .hamburger {
+      display: flex;
+  }
+}

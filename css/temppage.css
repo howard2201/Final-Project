@@ -1,0 +1,163 @@
+
+/* =========================
+   Pending Approval Card
+   ========================= */
+.pending-card{
+    margin-top: 2rem;
+}
+.rejection-card{
+    margin-top: 2rem;
+}
+.pending-card,
+.rejection-card {
+    background-color: #ffffff;
+    border-radius: 2px;
+    padding: 2rem;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+    text-align: center;
+}
+
+.pending-icon,
+.rejection-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.pending-card h1,
+.rejection-card h1 {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    color: #111;
+}
+
+.pending-card p,
+.rejection-card p {
+    color: #555;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+.info-box {
+    background-color: #f7f7f7;
+    border-radius: 2px;
+    padding: 1rem;
+    margin: 1rem 0;
+    text-align: left;
+}
+
+.info-box strong {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #333;
+}
+
+.contact-note {
+    font-size: 0.9rem;
+    color: #777;
+    margin-top: 1rem;
+}
+
+/* =========================
+   Rejection Countdown Box
+   ========================= */
+.countdown-box {
+    background-color: #fff3cd;
+    border: 1px solid #ffeeba;
+    border-radius: 2px;
+    padding: 1rem;
+    margin: 1rem 0;
+    text-align: center;
+}
+
+.countdown-box .label {
+    font-weight: bold;
+    color: #856404;
+    margin-bottom: 0.5rem;
+}
+
+.countdown-box .days {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #856404;
+}
+
+/* =========================
+   Details List
+   ========================= */
+.details-list {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0;
+    text-align: left;
+}
+
+.details-list li {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #eee;
+}
+
+.details-list li:last-child {
+    border-bottom: none;
+}
+
+.details-list .label {
+    font-weight: bold;
+    color: #333;
+}
+
+.details-list .value {
+    color: #555;
+}
+
+/* =========================
+   Warning Text
+   ========================= */
+.warning-text {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: 2px;
+    padding: 1rem;
+    color: #721c24;
+    margin: 1rem 0;
+    text-align: left;
+}
+
+/* =========================
+   Action Buttons
+   ========================= */
+.action-buttons {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.logout-link {
+    background-color: #1877f2;
+    color: #fff;
+    text-decoration: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 2px;
+    transition: background-color 0.3s ease;
+}
+
+.logout-link:hover {
+    background-color: #145dbf;
+}
+
+/* =========================
+   Responsive
+   ========================= */
+@media (max-width: 600px) {
+    .container {
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+
+    .details-list li {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
