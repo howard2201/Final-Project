@@ -11,7 +11,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
         <!-- Original nav links -->
         <nav class="nav original-nav">
             <a href="../index.php">Home</a>
-            <a href="../index.php#services" class="services-link">Services</a>
 
             <?php if ($current_page !== 'AnnouncementsList.php') : ?>
                 <a href="../announcements/AnnouncementsList.php">Announcements</a>
@@ -38,7 +37,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
         <!-- Dropdown nav for hamburger -->
         <nav class="nav dropdown-nav" id="dropdown2">
             <a href="../index.php">Home</a>
-            <a href="../index.php#services" class="services-link">Services</a>
 
             <?php if ($current_page !== 'AnnouncementsList.php') : ?>
                 <a href="../announcements/AnnouncementsList.php">Announcements</a>

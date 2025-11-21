@@ -46,7 +46,6 @@ class ErrorHandler {
                 .error-container {
                     background: white;
                     padding: 40px;
-                    border-radius: 15px;
                     box-shadow: 0 20px 60px rgba(0,0,0,0.3);
                     max-width: 600px;
                     width: 100%;
@@ -87,7 +86,6 @@ class ErrorHandler {
                 .error-suggestion {
                     background: linear-gradient(135deg, #f0f4ff 0%, #e8f0fe 100%);
                     padding: 20px;
-                    border-radius: 10px;
                     color: #555;
                     margin-top: 25px;
                     border-left: 5px solid #667eea;
@@ -112,7 +110,6 @@ class ErrorHandler {
                     background: #667eea;
                     color: white;
                     text-decoration: none;
-                    border-radius: 8px;
                     transition: all 0.3s;
                     font-weight: 500;
                     border: 2px solid transparent;

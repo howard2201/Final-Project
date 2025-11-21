@@ -8,50 +8,14 @@ $requests = $admin->getRequests();
 $error = '';
 $success = '';
 
-// Filter type from dropdown
-$filterType = isset($_GET['type']) ? $_GET['type'] : 'all';
-$filteredRequests = [];
-
-if ($requests) {
-    foreach ($requests as $r) {
-        if ($filterType === 'registration' && $r['type'] === 'Registration') {
-            $filteredRequests[] = $r;
-        } elseif ($filterType === 'document' && $r['type'] === 'Document') {
-            $filteredRequests[] = $r;
-        } elseif ($filterType === 'all') {
-            $filteredRequests[] = $r;
-        }
-    }
-}
-
 // Count statuses for chart
 $pending = $approved = $rejected = 0;
-foreach ($filteredRequests as $r) {
+foreach ($requests as $r) {
     switch ($r['status']) {
         case 'Pending': $pending++; break;
         case 'Approved': $approved++; break;
         case 'Rejected': $rejected++; break;
     }
-}
-
-if (isset($_POST['update_status'])) {
-  try {
-    $status = $_POST['status'];
-    $admin->updateRequestStatus($_POST['request_id'], $status);
-
-    if ($status === 'Approved') {
-      $_SESSION['success_message'] = "✓ Request has been approved successfully!";
-    } elseif ($status === 'Rejected') {
-      $_SESSION['success_message'] = "Request has been rejected.";
-    } else {
-      $_SESSION['success_message'] = "Request status updated successfully!";
-    }
-
-    header("Location: AdminDashboard.php" . ($filterType !== 'all' ? "?type=$filterType" : ""));
-    exit;
-  } catch (Exception $e) {
-    $error = "Failed to update request status. Please try again.";
-  }
 }
 
 // Get success message if any
@@ -67,14 +31,7 @@ if (isset($_SESSION['success_message'])) {
 <head>
   <meta charset="UTF-8">
   <title>Admin Dashboard</title>
-  <link rel="stylesheet" href="../css/admin_dashboard.css">
-
-  <!-- DataTables -->
-  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css">
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-  <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
-
-  <!-- Chart.js -->
+  <link rel="stylesheet" href="../css/admin.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="../js/alerts.js"></script>
 </head>
@@ -95,38 +52,10 @@ if (isset($_SESSION['success_message'])) {
       <header class="admin-top">
         <div>
           <p class="muted">Welcome back, Admin</p>
-          <h1>
-            <?php
-            if ($filterType === 'registration') echo "Registration Requests";
-            elseif ($filterType === 'document') echo "Document Requests";
-            else echo "All Requests";
-            ?>
-          </h1>
+          <h1>Dashboard Overview</h1>
         </div>
-        <div class="admin-actions">
-          <a href="DocumentRequests.php" class="btn">Manage Document Requests</a>
-          <a href="../logoutadmin.php" class="btn outline small">Logout</a>
-        </div>
+        <a href="DocumentRequests.php" class="btn">Manage Document Requests</a>
       </header>
-
-      <!-- Admin Credentials Display -->
-      <div class="admin-credentials">
-        <div class="credentials-box">
-          <h3>Admin Account</h3>
-          <div class="credential-item">
-            <span class="label">Username/Email:</span>
-            <span class="value"><?php echo htmlspecialchars($_SESSION['admin_email'] ?? 'N/A'); ?></span>
-          </div>
-          <div class="credential-item">
-            <span class="label">ID:</span>
-            <span class="value"><?php echo htmlspecialchars($_SESSION['admin_id'] ?? 'N/A'); ?></span>
-          </div>
-          <div class="credential-item">
-            <span class="label">Default Password:</span>
-            <span class="value">admin12345</span>
-          </div>
-        </div>
-      </div>
 
       <?php if (!empty($error)): ?>
         <div class="alert-error">
@@ -142,7 +71,6 @@ if (isset($_SESSION['success_message'])) {
         </div>
       <?php endif; ?>
 
-      <!-- Statistics Cards -->
       <section class="stats-grid">
         <div class="stat-card">
           <h3><?php echo $pending; ?></h3>
@@ -158,95 +86,14 @@ if (isset($_SESSION['success_message'])) {
         </div>
       </section>
 
-      <!-- Requests Table -->
-      <section id="requestsTable">
-        <table id="requestsDataTable">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Name</th>
-              <th>Type</th>
-              <th>Status</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            <?php
-            if ($filteredRequests) {
-              foreach ($filteredRequests as $r) {
-                $id = htmlspecialchars($r['id'], ENT_QUOTES, 'UTF-8');
-                $fullName = htmlspecialchars($r['full_name'], ENT_QUOTES, 'UTF-8');
-                $type = htmlspecialchars($r['type'], ENT_QUOTES, 'UTF-8');
-                $status = htmlspecialchars($r['status'], ENT_QUOTES, 'UTF-8');
-
-                echo "<tr>
-                  <td>{$id}</td>
-                  <td>{$fullName}</td>
-                  <td>{$type}</td>
-                  <td>{$status}</td>
-                  <td>
-                    <form method='POST' class='inline-form'>
-                      <input type='hidden' name='request_id' value='{$id}'>
-                      <input type='hidden' name='update_status' value='1'>
-                      <button type='submit' name='status' value='Approved' class='btn small'>Approve</button>
-                      <button type='submit' name='status' value='Rejected' class='btn small outline'>Reject</button>
-                    </form>
-                  </td>
-                </tr>";
-              }
-            } else {
-              echo "<tr><td colspan='5' class='muted'>No requests found.</td></tr>";
-            }
-            ?>
-          </tbody>
-        </table>
-      </section>
-
-      <!-- Bar Chart -->
       <div class="chart-section">
         <h2>Status Overview</h2>
         <canvas id="statusChart" width="400" height="200"></canvas>
       </div>
-
     </main>
   </div>
 
-  <?php include 'adminchat.php'; ?>
-
   <script>
-    // Suppress DataTables warnings (show in console instead of alert)
-    $.fn.dataTable.ext.errMode = 'none';
-
-    // Initialize DataTable
-    $(document).ready(function() {
-      // Small delay to ensure DOM is fully ready
-      setTimeout(function() {
-        // Destroy existing DataTable if it exists
-        if ($.fn.DataTable.isDataTable('#requestsDataTable')) {
-          $('#requestsDataTable').DataTable().destroy();
-        }
-
-        // Initialize DataTable with error handling
-        try {
-          $('#requestsDataTable').DataTable({
-            "pageLength": 10,
-            "columnDefs": [
-              { "orderable": false, "targets": 4 } // Disable sorting on Action column
-            ],
-            "order": [[0, "desc"]], // Sort by ID descending
-            "language": {
-              "emptyTable": "No requests found",
-              "zeroRecords": "No matching requests found"
-            },
-            "retrieve": true, // Allow re-initialization
-            "destroy": true // Destroy existing instance before creating new one
-          });
-        } catch (e) {
-          console.error('DataTable initialization error:', e);
-        }
-      }, 100);
-    });
-
     // Initialize Chart.js
     const ctx = document.getElementById('statusChart').getContext('2d');
     const statusChart = new Chart(ctx, {

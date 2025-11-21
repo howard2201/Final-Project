@@ -56,9 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Admin Login — Smart Barangay System</title>
-    <link rel="stylesheet" href="../css/header.css">
-    <link rel="stylesheet" href="../css/footer.css">
-    <link rel="stylesheet" href="../css/admin_login.css">
+    <link rel="stylesheet" href="../css/admin.css">
     <script src="../js/alerts.js"></script>
 </head>
 <body>
@@ -73,16 +71,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <?php if(!empty($error)): ?>
     <div data-error-message="<?php echo htmlspecialchars($error); ?>"></div>
 <?php endif; ?>
-
-<div class="admin-credentials-banner">
-    <div class="credentials-content">
-        <h3>📋 Admin Account Credentials</h3>
-        <div class="credentials-info">
-            <p><strong>Email:</strong> <span>admin@gmail.com</span></p>
-            <p><strong>Password:</strong> <span>admin12345</span></p>
-        </div>
-    </div>
-</div>
 
 <main class="container auth-page">
 <div class="backlogin">
@@ -109,11 +97,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <button type="submit" class="btn">Login as Admin</button>
             </div>
         </form>
-
-        <div class="login-divider">
-            <p>Forgot your password?</p>
-            <a href="AdminForgotPassword.php">🔑 Reset Password</a>
-        </div>
 
         <div class="login-divider">
             <p>Not a resident?</p>

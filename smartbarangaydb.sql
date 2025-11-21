@@ -574,20 +574,6 @@ BEGIN
 END$$
 DELIMITER ;
 
--- Add manual attendance record (Admin Only)
-DELIMITER $$
-CREATE PROCEDURE `addManualAttendance` (
-    IN p_name VARCHAR(255),
-    IN p_time_in DATETIME,
-    IN p_time_out DATETIME
-)
-BEGIN
-    INSERT INTO attendance (name, time_in, time_out)
-    VALUES (p_name, p_time_in, p_time_out);
-    SELECT LAST_INSERT_ID() AS attendance_id;
-END$$
-DELIMITER ;
-
 -- Additional helper procedures (by-email lookups)
 DELIMITER $$
 CREATE PROCEDURE `getResidentByEmail` (

@@ -54,7 +54,7 @@ foreach ($allResidents as $r) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Resident Approvals — Admin</title>
-  <link rel="stylesheet" href="../css/resident_approvals.css">
+  <link rel="stylesheet" href="../css/admin.css">
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
@@ -88,10 +88,11 @@ foreach ($allResidents as $r) {
           <a href="ResidentApprovals.php">Resident Approvals</a>
           <a href="AttendanceView.php">Attendance</a>
           <a href="../announcements/AnnouncementsList.php">Announcements</a>
+          <a href="../logout.php" class="btn outline small">Logout</a>
         </div>
       </nav>
     </aside>
-
+        
     <main class="main-content">
       <h1>Resident Account Approvals</h1>
 
@@ -124,7 +125,7 @@ foreach ($allResidents as $r) {
           <p>Rejected</p>
         </div>
       </div>
-
+        
       <!-- Pending Residents Table -->
       <section>
         <h2>Pending Resident Registrations</h2>
@@ -235,7 +236,6 @@ foreach ($allResidents as $r) {
     </main>
   </div>
 
-  <?php include 'adminchat.php'; ?>
 
   <!-- File Viewer Modal -->
   <div id="fileViewerModal" class="file-modal">

@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $_SESSION['resident_name'] = $resident['full_name'];
                     $_SESSION['login_success'] = true;
                     $_SESSION['success_message'] = "Welcome back, " . htmlspecialchars($resident['full_name']) . "! You have successfully logged in.";
-                    header('Location: Dashboard.php');
+                    header('Location: landing.php');
                     exit;
                 } else {
                     $error = "There is an issue with your account status. Please contact the barangay office.";
@@ -62,9 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Login — Prototype</title>
-  <link rel="stylesheet" href="../css/header.css">
-  <link rel="stylesheet" href="../css/footer.css">
-  <link rel="stylesheet" href="../css/login.css">
+  <link rel="stylesheet" href="../css/residents.css">
   <script src="../js/alerts.js"></script>
 </head>
 <body>
@@ -102,11 +100,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <a href="Register.php" class="btn outline">Register</a>
       </div>
     </form>
-
-    <div class="login-divider">
-      <p>Forgot your password?</p>
-      <a href="ForgotPassword.php">🔑 Reset Password</a>
-    </div>
 
     <div class="login-divider">
       <p>Are you an administrator?</p>

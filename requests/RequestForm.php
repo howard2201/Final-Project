@@ -36,7 +36,6 @@ $resident = new Resident();
 $residentId = $_SESSION['resident_id'];
 $error = '';
 $success = '';
-
 $requestTypes = [
     'Barangay Clearance',
     'Cedula',
@@ -123,10 +122,8 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-  <title>Request Service</title>
-<link rel="stylesheet" href="../css/header.css">
-<link rel="stylesheet" href="../css/footer.css">
-<link rel="stylesheet" href="../css/style.css">
+<title>Request Service</title>
+<link rel="stylesheet" href="../css/residents.css">
 <script src="../js/alerts.js"></script>
 </head>
 <body>
