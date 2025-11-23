@@ -71,7 +71,7 @@ if (isset($_SESSION['success_message'])) {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Welcome — Bagong Pook Community Service</title>
-<link rel="stylesheet" href="../css/landing.css">
+<link rel="stylesheet" href="../css/residents.css">
 <script src="../js/alerts.js"></script>
 </head>
 <body>
@@ -79,7 +79,7 @@ if (isset($_SESSION['success_message'])) {
 <?php include '../includes/headerinner.php'; ?>
 
 <?php if(!empty($successMessage)): ?>
-  <div data-success-message="<?php echo htmlspecialchars($successMessage); ?>"></div>
+  <div data-success-message="<?php echo htmlspecialchars(string: $successMessage); ?>"></div>
 <?php endif; ?>
 
 <main class="container landing-page">
