@@ -16,6 +16,14 @@ try {
     // Get PDO connection
     $database = Database::getInstance();
     $conn = $database->getConnection();
+    
+    // Validate database connection
+    if ($conn === null) {
+        error_log("Attendance system error: Database connection is null");
+        http_response_code(500);
+        echo "System Error";
+        exit;
+    }
 
     // Validate request method
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -55,8 +63,10 @@ try {
         // Check the last record for this user using stored procedure
         $stmt = $conn->prepare("CALL getLastAttendance(?)");
         
-        if (!$stmt) {
-            throw new Exception("Failed to prepare statement");
+        if ($stmt === false) {
+            $errorInfo = $conn->errorInfo();
+            error_log("Attendance system error: Failed to prepare getLastAttendance statement. Error: " . print_r($errorInfo, true));
+            throw new Exception("Failed to prepare statement: " . ($errorInfo[2] ?? 'Unknown error'));
         }
 
         $stmt->execute([$name]);
@@ -65,7 +75,8 @@ try {
 
         if ($row) {
             // Validate the row has required fields
-            if (!isset($row['id']) || !isset($row['time_out'])) {
+            // Use array_key_exists instead of isset because time_out can be NULL
+            if (!array_key_exists('id', $row) || !array_key_exists('time_out', $row)) {
                 throw new Exception("Invalid record structure from database");
             }
 
@@ -73,8 +84,10 @@ try {
                 // Check-Out
                 $update = $conn->prepare("CALL updateAttendanceCheckOut(?, ?)");
                 
-                if (!$update) {
-                    throw new Exception("Failed to prepare checkout statement");
+                if ($update === false) {
+                    $errorInfo = $conn->errorInfo();
+                    error_log("Attendance system error: Failed to prepare updateAttendanceCheckOut statement. Error: " . print_r($errorInfo, true));
+                    throw new Exception("Failed to prepare checkout statement: " . ($errorInfo[2] ?? 'Unknown error'));
                 }
 
                 $success = $update->execute([$row['id'], $now]);
@@ -84,14 +97,18 @@ try {
                     http_response_code(200);
                     $response = "Check-Out";
                 } else {
-                    throw new Exception("Failed to execute checkout update");
+                    $errorInfo = $update->errorInfo();
+                    error_log("Attendance system error: Failed to execute checkout update. Error: " . print_r($errorInfo, true));
+                    throw new Exception("Failed to execute checkout update: " . ($errorInfo[2] ?? 'Unknown error'));
                 }
             } else {
                 // New Check-In
                 $insert = $conn->prepare("CALL createAttendanceCheckIn(?, ?)");
                 
-                if (!$insert) {
-                    throw new Exception("Failed to prepare checkin statement");
+                if ($insert === false) {
+                    $errorInfo = $conn->errorInfo();
+                    error_log("Attendance system error: Failed to prepare createAttendanceCheckIn statement. Error: " . print_r($errorInfo, true));
+                    throw new Exception("Failed to prepare checkin statement: " . ($errorInfo[2] ?? 'Unknown error'));
                 }
 
                 $success = $insert->execute([$name, $now]);
@@ -101,15 +118,19 @@ try {
                     http_response_code(201);
                     $response = "Check-In";
                 } else {
-                    throw new Exception("Failed to execute checkin insert");
+                    $errorInfo = $insert->errorInfo();
+                    error_log("Attendance system error: Failed to execute checkin insert. Error: " . print_r($errorInfo, true));
+                    throw new Exception("Failed to execute checkin insert: " . ($errorInfo[2] ?? 'Unknown error'));
                 }
             }
         } else {
             // First Check-In
             $insert = $conn->prepare("CALL createAttendanceCheckIn(?, ?)");
             
-            if (!$insert) {
-                throw new Exception("Failed to prepare checkin statement");
+            if ($insert === false) {
+                $errorInfo = $conn->errorInfo();
+                error_log("Attendance system error: Failed to prepare createAttendanceCheckIn statement (first check-in). Error: " . print_r($errorInfo, true));
+                throw new Exception("Failed to prepare checkin statement: " . ($errorInfo[2] ?? 'Unknown error'));
             }
 
             $success = $insert->execute([$name, $now]);
@@ -119,16 +140,20 @@ try {
                 http_response_code(201);
                 $response = "Check-In";
             } else {
-                throw new Exception("Failed to execute checkin insert");
+                $errorInfo = $insert->errorInfo();
+                error_log("Attendance system error: Failed to execute checkin insert (first check-in). Error: " . print_r($errorInfo, true));
+                throw new Exception("Failed to execute checkin insert: " . ($errorInfo[2] ?? 'Unknown error'));
             }
         }
 
     } catch (PDOException $e) {
-        error_log("Attendance PDO error: " . $e->getMessage());
+        error_log("Attendance PDO error: " . $e->getMessage() . " | Code: " . $e->getCode() . " | File: " . $e->getFile() . " | Line: " . $e->getLine());
+        error_log("PDO Error Info: " . print_r($conn->errorInfo(), true));
         http_response_code(500);
         $response = "Database Error";
     } catch (Exception $e) {
-        error_log("Attendance system error: " . $e->getMessage());
+        error_log("Attendance system error: " . $e->getMessage() . " | File: " . $e->getFile() . " | Line: " . $e->getLine());
+        error_log("Stack trace: " . $e->getTraceAsString());
         http_response_code(500);
         $response = "System Error";
     }
@@ -136,7 +161,8 @@ try {
     echo $response;
 
 } catch (Exception $e) {
-    error_log("Critical attendance system error: " . $e->getMessage());
+    error_log("Critical attendance system error: " . $e->getMessage() . " | File: " . $e->getFile() . " | Line: " . $e->getLine());
+    error_log("Stack trace: " . $e->getTraceAsString());
     http_response_code(500);
     echo "System Error";
 }
