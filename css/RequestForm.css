@@ -1,0 +1,178 @@
+/* ========================================
+   VARIABLES
+   ======================================== */
+:root {
+  --primary-green: #2c7a2c;
+  --secondary-green: #f2faf2;
+  --white: #ffffff;
+  --accent-yellow: #ffc107;
+  --text-dark: #1f1f1f;
+  --text-light: #555555;
+  --btn-hover: #1b5e1b;
+  --card-shadow: rgba(0, 0, 0, 0.08);
+  --transition-speed: 0.3s;
+}
+
+/* ========================================
+   RESET & BASE
+   ======================================== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Inter", system-ui, Arial, sans-serif;
+  background-color: var(--secondary-green);
+  color: var(--text-dark);
+  line-height: 1.6;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ========================================
+   REQUEST FORM PAGE
+   ======================================== */
+.request-page {
+  margin: 3rem auto;
+  display: flex;
+  justify-content: center;
+}
+
+.form-card {
+  background-color: var(--white);
+  padding: 2rem;
+  width: 100%;
+  max-width: 600px;
+  box-shadow: 0 6px 20px var(--card-shadow);
+}
+
+.form-card h2 {
+  color: var(--primary-green);
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  position: relative;
+}
+
+.form-card h2::after {
+  content: "";
+  display: block;
+  width: 50px;
+  height: 4px;
+  background-color: var(--accent-yellow);
+  margin: 0.5rem auto 1rem;
+}
+
+.form-card label {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+  font-weight: 500;
+  color: var(--text-dark);
+  font-size: 0.95rem;
+}
+
+.form-card input[type="text"],
+.form-card input[type="file"],
+.form-card select,
+.form-card textarea {
+  margin-top: 0.3rem;
+  padding: 0.7rem 1rem;
+  border: 1px solid #ccc;
+  font-size: 0.95rem;
+  transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+}
+
+.form-card input[type="text"]:focus,
+.form-card input[type="file"]:focus,
+.form-card select:focus,
+.form-card textarea:focus {
+  outline: none;
+  border-color: var(--primary-green);
+  box-shadow: 0 0 5px rgba(44, 122, 44, 0.5);
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.actions .btn {
+  padding: 0.8rem 1.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.95rem;
+  background-color: var(--primary-green);
+  color: var(--white);
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(44, 122, 44, 0.3);
+}
+
+.actions .btn:hover {
+  background-color: var(--btn-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(44, 122, 44, 0.4);
+}
+
+.actions .btn.outline {
+  background-color: transparent;
+  border: 2px solid var(--primary-green);
+  color: var(--primary-green);
+  transition: all 0.3s ease;
+}
+
+.actions .btn.outline:hover {
+  background-color: var(--primary-green);
+  color: var(--white);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(44, 122, 44, 0.4);
+}
+
+.step {
+  display: block;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.step-hidden {
+  display: none;
+}
+
+@keyframes fadeIn {
+  from {opacity: 0;}
+  to {opacity: 1;}
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+@media (max-width: 768px) {
+  .form-card {
+    padding: 1.5rem;
+    width: 95%;
+  }
+
+  .actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .actions .btn {
+    width: 100%;
+  }
+}
+

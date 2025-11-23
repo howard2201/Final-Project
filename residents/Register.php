@@ -8,7 +8,8 @@ $success = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $fullName = trim($_POST['fullName']);
-  $email = trim($_POST['email']);
+  $username = trim($_POST['username']);
+  $phoneNumber = trim($_POST['phone_number']);
   $password = $_POST['password'];
 
   // Validate inputs
@@ -16,10 +17,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $error = "Please enter your full name.";
   } elseif (strlen($fullName) < 3) {
     $error = "Your name must be at least 3 characters long.";
-  } elseif (empty($email)) {
-    $error = "Please enter your email address.";
-  } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    $error = "Please enter a valid email address (e.g., yourname@example.com).";
+  } elseif (empty($username)) {
+    $error = "Please enter a username.";
+  } elseif (strlen($username) < 3 || strlen($username) > 20) {
+    $error = "Username must be between 3 and 20 characters.";
+  } elseif (!preg_match('/^[a-zA-Z0-9_]+$/', $username)) {
+    $error = "Username can only contain letters, numbers, and underscores.";
+  } elseif (empty($phoneNumber)) {
+    $error = "Please enter your phone number.";
+  } elseif (!preg_match('/^(\+63|0)?9\d{9}$/', $phoneNumber)) {
+    $error = "Please enter a valid Philippine phone number (e.g., 09123456789 or +639123456789).";
   } elseif (empty($password)) {
     $error = "Please enter a password.";
   } elseif (strlen($password) < 6 || strlen($password) > 16) {
@@ -76,24 +83,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           // Get database connection
           $pdo = Database::getInstance()->getConnection();
 
-          // Check if email already exists
-          $checkStmt = $pdo->prepare('CALL checkResidentEmailExists(?)');
-          $checkStmt->execute([$email]);
+          // Check if username already exists
+          $checkUsernameStmt = $pdo->prepare('CALL checkResidentUsernameExists(?)');
+          $checkUsernameStmt->execute([$username]);
 
-          if ($checkStmt->rowCount() > 0) {
-            $error = "This email is already registered. Please use a different email or try logging in.";
+          if ($checkUsernameStmt->rowCount() > 0) {
+            $error = "This username is already taken. Please choose a different username.";
           } else {
-            // Close the previous result set before calling another procedure
-            $checkStmt->closeCursor();
+            $checkUsernameStmt->closeCursor();
 
-            // Insert using stored procedure
-            $stmt = $pdo->prepare('CALL registerResident(?, ?, ?, ?, ?)');
-            $stmt->execute([$fullName, $email, $hashedPassword, $idFileContent, $proofFileContent]);
+            // Format phone number
+            $phoneNumber = preg_replace('/[^0-9+]/', '', $phoneNumber);
+            if (substr($phoneNumber, 0, 1) === '0') {
+              $phoneNumber = '+63' . substr($phoneNumber, 1);
+            } elseif (substr($phoneNumber, 0, 2) === '63') {
+              $phoneNumber = '+' . $phoneNumber;
+            } elseif (substr($phoneNumber, 0, 1) !== '+') {
+              $phoneNumber = '+63' . $phoneNumber;
+            }
+
+            // Insert using stored procedure (email is NULL)
+            $stmt = $pdo->prepare('CALL registerResident(?, ?, ?, ?, ?, ?, ?)');
+            $stmt->execute([$fullName, $username, NULL, $phoneNumber, $hashedPassword, $idFileContent, $proofFileContent]);
 
             if ($stmt->rowCount() > 0) {
-              $_SESSION['success_message'] = "Registration successful! Your account is being reviewed by barangay officials. You'll be able to log in once approved.";
-              header("Location: Login.php");
-              exit;
+              // Store username in session for SMS verification
+              $_SESSION['registration_username'] = $username;
+              
+              // Send verification code
+              require_once '../config/SMSService.php';
+              $residentClass = new Resident();
+              $sent = $residentClass->sendVerificationCode($username);
+              
+              if ($sent) {
+                header("Location: VerifySMS.php");
+                exit;
+              } else {
+                $error = "Account created but failed to send verification code. Please contact support.";
+              }
             } else {
               $error = "We couldn't create your account right now. Please try again or contact the barangay office for help.";
             }
@@ -102,6 +129,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           $error = "We're experiencing technical difficulties. Please try again later or contact the barangay office for assistance.";
           // Log the actual error for developers (in production, log to file)
           error_log("Registration error: " . $e->getMessage());
+        } catch (Exception $e) {
+          $error = $e->getMessage();
         }
       }
     }
@@ -115,7 +144,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Register — Prototype</title>
-  <link rel="stylesheet" href="../css/residents.css">
+  <link rel="stylesheet" href="../css/Register.css">
   <script src="../js/alerts.js"></script>
 </head>
 <body>
@@ -145,11 +174,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <label>Full Name
         <input type="text" name="fullName" required>
       </label>
-      <label>Email
-        <input type="email" name="email" required>
+      <label>Username
+        <input type="text" name="username" pattern="[a-zA-Z0-9_]{3,20}" title="3-20 characters, letters, numbers, and underscores only" required>
+        <small style="color: #666; font-size: 0.85em;">3-20 characters, letters, numbers, and underscores only</small>
+      </label>
+      <label>Phone Number
+        <input type="tel" name="phone_number" placeholder="09123456789 or +639123456789" pattern="(\+63|0)?9\d{9}" required>
+        <small style="color: #666; font-size: 0.85em;">Philippine mobile number (e.g., 09123456789)</small>
       </label>
       <label>Password
-        <input type="password" name="password" required>
+        <input type="password" name="password" minlength="6" maxlength="16" required>
+        <small style="color: #666; font-size: 0.85em;">6-16 characters</small>
       </label>
       <label>Upload Valid ID
         <input type="file" name="registerId" accept=".jpg,.jpeg,.png,.pdf" required>

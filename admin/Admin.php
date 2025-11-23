@@ -8,11 +8,11 @@ class Admin {
         $this->conn = Database::getInstance()->getConnection();
     }
 
-    public function login($email, $password) {
+    public function login($username, $password) {
         try {
             // Use stored procedure for admin login
             $stmt = $this->conn->prepare("CALL loginAdmin(?)");
-            $stmt->execute([$email]);
+            $stmt->execute([$username]);
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
             // Close cursor to prevent pending resultsets
@@ -30,6 +30,88 @@ class Admin {
         } catch (PDOException $e) {
             error_log("Admin login error: " . $e->getMessage());
             throw new Exception("Unable to process login. Please try again.");
+        }
+    }
+
+    public function initiatePasswordReset($username) {
+        try {
+            // Check if username exists
+            $stmt = $this->conn->prepare("CALL getAdminByUsername(?)");
+            $stmt->execute([$username]);
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            $stmt->closeCursor();
+
+            if (!$user) {
+                return false; // Don't reveal if username exists
+            }
+
+            // Generate reset token
+            $resetToken = bin2hex(random_bytes(32));
+
+            // Store reset token
+            $stmt = $this->conn->prepare("CALL initiatePasswordResetAdmin(?, ?)");
+            $stmt->execute([$username, $resetToken]);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            $stmt->closeCursor();
+
+            if ($result && isset($result['phone_number'])) {
+                // Generate verification code
+                require_once "../config/SMSService.php";
+                $code = SMSService::generateCode();
+                
+                // Store verification code
+                $stmt = $this->conn->prepare("CALL storeVerificationCodeAdmin(?, ?)");
+                $stmt->execute([$username, $code]);
+                $stmt->closeCursor();
+
+                // Send SMS
+                $smsService = new SMSService();
+                $smsService->sendPasswordResetCode($result['phone_number'], $code);
+
+                return ['token' => $resetToken, 'username' => $username];
+            }
+
+            return false;
+        } catch (PDOException $e) {
+            error_log("Password reset initiation error: " . $e->getMessage());
+            throw new Exception("Unable to initiate password reset. Please try again.");
+        }
+    }
+
+    public function verifyResetCode($username, $code) {
+        try {
+            $stmt = $this->conn->prepare("CALL verifyCodeAdmin(?, ?)");
+            $stmt->execute([$username, $code]);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            $stmt->closeCursor();
+            return $result ? true : false;
+        } catch (PDOException $e) {
+            error_log("Code verification error: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    public function resetPassword($username, $token, $newPassword) {
+        try {
+            // Verify token
+            $stmt = $this->conn->prepare("CALL verifyPasswordResetTokenAdmin(?, ?)");
+            $stmt->execute([$username, $token]);
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            $stmt->closeCursor();
+
+            if (!$user) {
+                return false;
+            }
+
+            // Hash new password
+            $hash = hash('sha256', $newPassword);
+
+            // Reset password
+            $stmt = $this->conn->prepare("CALL resetPasswordAdmin(?, ?)");
+            return $stmt->execute([$username, $hash]);
+        } catch (PDOException $e) {
+            error_log("Password reset error: " . $e->getMessage());
+            throw new Exception("Unable to reset password. Please try again.");
         }
     }
 

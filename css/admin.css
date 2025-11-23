@@ -95,16 +95,22 @@ a {
 }
 
 .auth-card input[type="email"],
-.auth-card input[type="password"] {
+.auth-card input[type="password"],
+.auth-card input[type="text"],
+.auth-card input[type="tel"] {
   padding: 0.7rem 1rem;
   margin-top: 0.3rem;
   border: 1px solid #ccc;
+  border-radius: 4px;
   font-size: 0.95rem;
+  width: 100%;
   transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
 }
 
 .auth-card input[type="email"]:focus,
-.auth-card input[type="password"]:focus {
+.auth-card input[type="password"]:focus,
+.auth-card input[type="text"]:focus,
+.auth-card input[type="tel"]:focus {
   outline: none;
   border-color: var(--primary-green);
   box-shadow: 0 0 5px rgba(24, 119, 242, 0.5);
@@ -687,6 +693,7 @@ table tbody tr:hover {
   font-weight: 500;
   color: #fff;
   text-align: center;
+  border-radius: 4px;
 }
 
 .status-pending {
@@ -699,6 +706,95 @@ table tbody tr:hover {
 
 .status-rejected {
   background-color: #dc2626;
+}
+
+/* Dashboard Section */
+.dashboard-section {
+  margin-bottom: 3rem;
+  background-color: var(--white);
+  padding: 2rem;
+  border-radius: 2px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+}
+
+.dashboard-section h2 {
+  color: var(--primary-green);
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  border-bottom: 3px solid var(--accent-yellow);
+  padding-bottom: 0.5rem;
+}
+
+/* Filter Form */
+.filter-form {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+}
+
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-end;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.filter-group label {
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: var(--text-dark);
+}
+
+.filter-group .form-input {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.filter-group .btn {
+  padding: 0.5rem 1rem;
+  margin-right: 0.5rem;
+}
+
+/* Data Table */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.data-table thead {
+  background-color: var(--primary-green);
+  color: var(--white);
+}
+
+.data-table th {
+  padding: 0.75rem;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.data-table td {
+  padding: 0.75rem;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 0.9rem;
+}
+
+.data-table tbody tr:hover {
+  background-color: #f9fafb;
+}
+
+.text-center {
+  text-align: center;
 }
 
 /* Buttons */
@@ -773,22 +869,58 @@ table tbody tr:hover {
   cursor: pointer;
 }
 
+.zoom-btn {
+  background: rgba(0, 0, 0, 0.1);
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 5px 10px;
+  font-size: 1rem;
+  margin-left: 5px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.zoom-btn:hover {
+  background: rgba(0, 0, 0, 0.2);
+}
+
 .file-modal-body {
   overflow: auto;
   max-height: 70vh;
   text-align: center;
+  position: relative;
 }
 
 .file-modal-body img {
   max-width: 100%;
   transition: transform 0.2s ease;
   cursor: default;
+  display: block;
+  margin: 0 auto;
 }
 
 .file-modal-body iframe {
   width: 100%;
   height: 70vh;
   border: none;
+}
+
+#requestImageViewerContainer,
+#imageViewerContainer {
+  overflow: auto;
+  max-height: 70vh;
+  text-align: center;
+  position: relative;
+  background: #f5f5f5;
+}
+
+#requestImageViewerContainer img,
+#imageViewerContainer img {
+  max-width: none;
+  transition: transform 0.2s ease;
+  cursor: default;
+  display: block;
+  margin: 0 auto;
 }
 /* ========================================
    ATTENDANCE MANAGEMENT STYLES
@@ -1249,7 +1381,7 @@ table tbody tr:hover {
 }
 
 .announcement-create-section h3 {
-  color: var(--primary-green);
+  color: #2c7a2c; /* Green matching homepage */
   margin-bottom: 1rem;
   font-size: 1.4rem;
 }
@@ -1278,25 +1410,25 @@ table tbody tr:hover {
 .announcement-form .form-input:focus,
 .announcement-form .form-textarea:focus {
   outline: none;
-  border-color: var(--primary-green);
-  box-shadow: 0 0 5px rgba(24, 119, 242, 0.3);
+  border-color: #2c7a2c; /* Green matching homepage */
+  box-shadow: 0 0 5px rgba(44, 122, 44, 0.3);
 }
 
 .announcement-form button.btn-primary {
-  background-color: var(--primary-green);
+  background-color: #2c7a2c; /* Green matching homepage */
   color: var(--white);
   font-weight: 600;
   padding: 0.7rem 1.4rem;
-  border-radius: 2px;
+  border-radius: 4px;
   border: none;
   cursor: pointer;
   transition: all var(--transition-speed);
 }
 
 .announcement-form button.btn-primary:hover {
-  background-color: var(--btn-hover);
+  background-color: #1b5e1b; /* Darker green for hover */
   transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(24, 119, 242, 0.3);
+  box-shadow: 0 4px 10px rgba(44, 122, 44, 0.3);
 }
 
 /* Announcements List */
@@ -1330,7 +1462,7 @@ table tbody tr:hover {
 .announcement-header h3 {
   margin: 0;
   font-size: 1.1rem;
-  color: var(--primary-green);
+  color: #2c7a2c; /* Green matching homepage */
 }
 
 .announcement-header .announcement-date {
@@ -1412,6 +1544,37 @@ table tbody tr:hover {
 
 .announcement-filter-form .btn {
   padding: 0.5rem 1rem;
-  border-radius: 2px;
+  border-radius: 4px;
   margin-top: 0; /* Remove vertical spacing */
+}
+
+.announcement-filter-form .btn-primary,
+.announcement-filter-form .btn:not(.outline) {
+  background-color: #2c7a2c; /* Green matching homepage */
+  color: var(--white);
+  border: none;
+  font-weight: 600;
+  transition: all var(--transition-speed);
+}
+
+.announcement-filter-form .btn-primary:hover,
+.announcement-filter-form .btn:not(.outline):hover {
+  background-color: #1b5e1b; /* Darker green for hover */
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(44, 122, 44, 0.3);
+}
+
+.announcement-filter-form .btn.outline {
+  background-color: transparent;
+  border: 2px solid #2c7a2c; /* Green matching homepage */
+  color: #2c7a2c;
+  font-weight: 600;
+  transition: all var(--transition-speed);
+}
+
+.announcement-filter-form .btn.outline:hover {
+  background-color: #2c7a2c;
+  color: var(--white);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(44, 122, 44, 0.3);
 }

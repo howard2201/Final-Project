@@ -120,7 +120,7 @@ if (isset($_SESSION['success_message'])) {
 <head>
 <meta charset="UTF-8">
 <title>Dashboard</title>
-<link rel="stylesheet" href="../css/residents.css">
+<link rel="stylesheet" href="../css/Dashboard.css">
 <script src="../js/alerts.js"></script>
 </head>
 <body>
@@ -162,8 +162,9 @@ if (isset($_SESSION['success_message'])) {
     </div>
 
     <div class="hero-actions">
-      <div class="request-button" style="margin: 1.5rem 0;">
+      <div class="request-button" style="margin: 1.5rem 0; display: flex; gap: 1rem;">
           <a href="../requests/RequestForm.php" class="btn">Request a Document</a>
+          <a href="../chatting/residents/Messages.php" class="btn">💬 Messages</a>
       </div>
     </div>
 

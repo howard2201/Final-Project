@@ -30,8 +30,14 @@ SET time_zone = "+00:00";
 CREATE TABLE `admins` (
   `id` int(11) NOT NULL,
   `full_name` varchar(255) NOT NULL,
+  `username` varchar(50) NOT NULL,
   `email` varchar(255) NOT NULL,
+  `phone_number` varchar(20) DEFAULT NULL,
   `password` varchar(255) NOT NULL,
+  `verification_code` varchar(10) DEFAULT NULL,
+  `verification_expires` datetime DEFAULT NULL,
+  `password_reset_token` varchar(100) DEFAULT NULL,
+  `password_reset_expires` datetime DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -54,8 +60,8 @@ INSERT INTO attendance (name, time_in, time_out) VALUES
 -- Password is hashed using SHA-256
 --
 
-INSERT INTO `admins` (`id`, `full_name`, `email`, `password`, `created_at`) VALUES
-(1, 'Admin', 'admin@gmail.com', '41e5653fc7aeb894026d6bb7b2db7f65902b454945fa8fd65a6327047b5277fb', '2024-01-01 00:00:00');
+INSERT INTO `admins` (`id`, `full_name`, `username`, `email`, `password`, `created_at`) VALUES
+(1, 'Admin', 'admin', 'admin@gmail.com', '41e5653fc7aeb894026d6bb7b2db7f65902b454945fa8fd65a6327047b5277fb', '2024-01-01 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -96,12 +102,18 @@ CREATE TABLE `requests` (
 CREATE TABLE `residents` (
   `id` int(11) NOT NULL,
   `full_name` varchar(255) NOT NULL,
-  `email` varchar(255) NOT NULL,
+  `username` varchar(50) NOT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `phone_number` varchar(20) DEFAULT NULL,
   `resident_password` varchar(255) NOT NULL,
   `id_file` LONGBLOB NOT NULL,
   `proof_file` LONGBLOB NOT NULL,
   `approval_status` enum('Pending','Approved','Rejected') DEFAULT 'Pending',
   `rejection_date` timestamp NULL DEFAULT NULL,
+  `verification_code` varchar(10) DEFAULT NULL,
+  `verification_expires` datetime DEFAULT NULL,
+  `password_reset_token` varchar(100) DEFAULT NULL,
+  `password_reset_expires` datetime DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -143,7 +155,8 @@ CREATE TABLE `messages` (
 --
 ALTER TABLE `admins`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `email` (`email`);
+  ADD UNIQUE KEY `email` (`email`),
+  ADD UNIQUE KEY `username` (`username`);
 
 --
 -- Indexes for table `announcements`
@@ -163,7 +176,8 @@ ALTER TABLE `requests`
 --
 ALTER TABLE `residents`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `email` (`email`);
+  ADD UNIQUE KEY `email` (`email`),
+  ADD UNIQUE KEY `username` (`username`);
 
 --
 -- Indexes for table `messages`
@@ -248,11 +262,33 @@ BEGIN
 END$$
 DELIMITER ;
 
+-- Check if username exists for residents
+DELIMITER $$
+CREATE PROCEDURE `checkResidentUsernameExists` (
+    IN p_username VARCHAR(50)
+)
+BEGIN
+    SELECT id FROM residents WHERE username = p_username;
+END$$
+DELIMITER ;
+
+-- Get resident by username
+DELIMITER $$
+CREATE PROCEDURE `getResidentByUsername` (
+    IN p_username VARCHAR(50)
+)
+BEGIN
+    SELECT * FROM residents WHERE username = p_username LIMIT 1;
+END$$
+DELIMITER ;
+
 -- Register new resident
 DELIMITER $$
 CREATE PROCEDURE `registerResident` (
     IN p_full_name VARCHAR(255),
+    IN p_username VARCHAR(50),
     IN p_email VARCHAR(255),
+    IN p_phone_number VARCHAR(20),
     IN p_password VARCHAR(255),
     IN p_id_file LONGBLOB,
     IN p_proof_file LONGBLOB
@@ -261,18 +297,19 @@ BEGIN
     -- Insert new resident without explicitly setting approval_status so the
     -- table default ('Pending') applies. This ensures newly created accounts
     -- require admin approval before they can access protected pages.
-    INSERT INTO residents (full_name, email, resident_password, id_file, proof_file)
-    VALUES (p_full_name, p_email, p_password, p_id_file, p_proof_file);
+    INSERT INTO residents (full_name, username, email, phone_number, resident_password, id_file, proof_file)
+    VALUES (p_full_name, p_username, p_email, p_phone_number, p_password, p_id_file, p_proof_file);
+    SELECT LAST_INSERT_ID() AS resident_id;
 END$$
 DELIMITER ;
 
--- Login resident
+-- Login resident by username
 DELIMITER $$
 CREATE PROCEDURE `loginResident` (
-    IN p_email VARCHAR(255)
+    IN p_username VARCHAR(50)
 )
 BEGIN
-    SELECT * FROM residents WHERE email = p_email;
+    SELECT * FROM residents WHERE username = p_username;
 END$$
 DELIMITER ;
 
@@ -280,7 +317,7 @@ DELIMITER ;
 DELIMITER $$
 CREATE PROCEDURE `getPendingResidents` ()
 BEGIN
-    SELECT id, full_name, email, id_file, proof_file, created_at, approval_status
+    SELECT id, full_name, phone_number, id_file, proof_file, created_at, approval_status
     FROM residents
     WHERE approval_status = 'Pending'
     ORDER BY created_at DESC;
@@ -310,7 +347,7 @@ DELIMITER ;
 DELIMITER $$
 CREATE PROCEDURE `getAllResidentsWithStatus` ()
 BEGIN
-    SELECT id, full_name, email, approval_status, created_at
+    SELECT id, full_name, username, phone_number, approval_status, created_at
     FROM residents
     ORDER BY created_at DESC;
 END$$
@@ -330,13 +367,13 @@ DELIMITER ;
 -- ADMIN PROCEDURES
 -- ========================================
 
--- Login admin
+-- Login admin by username
 DELIMITER $$
 CREATE PROCEDURE `loginAdmin` (
-    IN p_email VARCHAR(255)
+    IN p_username VARCHAR(50)
 )
 BEGIN
-    SELECT * FROM admins WHERE email = p_email;
+    SELECT * FROM admins WHERE username = p_username;
 END$$
 DELIMITER ;
 
@@ -593,6 +630,26 @@ BEGIN
 END$$
 DELIMITER ;
 
+-- Check if username exists for admins
+DELIMITER $$
+CREATE PROCEDURE `checkAdminUsernameExists` (
+    IN p_username VARCHAR(50)
+)
+BEGIN
+    SELECT id FROM admins WHERE username = p_username;
+END$$
+DELIMITER ;
+
+-- Get admin by username
+DELIMITER $$
+CREATE PROCEDURE `getAdminByUsername` (
+    IN p_username VARCHAR(50)
+)
+BEGIN
+    SELECT * FROM admins WHERE username = p_username LIMIT 1;
+END$$
+DELIMITER ;
+
 -- ========================================
 -- MESSAGE PROCEDURES (Chat System)
 -- ========================================
@@ -740,6 +797,162 @@ BEGIN
 END$$
 DELIMITER ;
 
+
+-- ========================================
+-- PASSWORD RESET AND SMS VERIFICATION PROCEDURES
+-- ========================================
+
+-- Store verification code for resident
+DELIMITER $$
+CREATE PROCEDURE `storeVerificationCodeResident` (
+    IN p_username VARCHAR(50),
+    IN p_code VARCHAR(10)
+)
+BEGIN
+    UPDATE residents
+    SET verification_code = p_code,
+        verification_expires = DATE_ADD(NOW(), INTERVAL 10 MINUTE)
+    WHERE username = p_username;
+END$$
+DELIMITER ;
+
+-- Verify code for resident
+DELIMITER $$
+CREATE PROCEDURE `verifyCodeResident` (
+    IN p_username VARCHAR(50),
+    IN p_code VARCHAR(10)
+)
+BEGIN
+    SELECT id, username, full_name, email, phone_number
+    FROM residents
+    WHERE username = p_username
+    AND verification_code = p_code
+    AND verification_expires > NOW();
+END$$
+DELIMITER ;
+
+-- Initiate password reset for resident
+DELIMITER $$
+CREATE PROCEDURE `initiatePasswordResetResident` (
+    IN p_username VARCHAR(50),
+    IN p_reset_token VARCHAR(100)
+)
+BEGIN
+    UPDATE residents
+    SET password_reset_token = p_reset_token,
+        password_reset_expires = DATE_ADD(NOW(), INTERVAL 15 MINUTE)
+    WHERE username = p_username;
+    SELECT phone_number FROM residents WHERE username = p_username;
+END$$
+DELIMITER ;
+
+-- Verify password reset token for resident
+DELIMITER $$
+CREATE PROCEDURE `verifyPasswordResetTokenResident` (
+    IN p_username VARCHAR(50),
+    IN p_token VARCHAR(100)
+)
+BEGIN
+    SELECT id, username
+    FROM residents
+    WHERE username = p_username
+    AND password_reset_token = p_token
+    AND password_reset_expires > NOW();
+END$$
+DELIMITER ;
+
+-- Reset password for resident
+DELIMITER $$
+CREATE PROCEDURE `resetPasswordResident` (
+    IN p_username VARCHAR(50),
+    IN p_new_password VARCHAR(255)
+)
+BEGIN
+    UPDATE residents
+    SET resident_password = p_new_password,
+        password_reset_token = NULL,
+        password_reset_expires = NULL,
+        verification_code = NULL,
+        verification_expires = NULL
+    WHERE username = p_username;
+END$$
+DELIMITER ;
+
+-- Store verification code for admin
+DELIMITER $$
+CREATE PROCEDURE `storeVerificationCodeAdmin` (
+    IN p_username VARCHAR(50),
+    IN p_code VARCHAR(10)
+)
+BEGIN
+    UPDATE admins
+    SET verification_code = p_code,
+        verification_expires = DATE_ADD(NOW(), INTERVAL 10 MINUTE)
+    WHERE username = p_username;
+END$$
+DELIMITER ;
+
+-- Verify code for admin
+DELIMITER $$
+CREATE PROCEDURE `verifyCodeAdmin` (
+    IN p_username VARCHAR(50),
+    IN p_code VARCHAR(10)
+)
+BEGIN
+    SELECT id, username, full_name, email, phone_number
+    FROM admins
+    WHERE username = p_username
+    AND verification_code = p_code
+    AND verification_expires > NOW();
+END$$
+DELIMITER ;
+
+-- Initiate password reset for admin
+DELIMITER $$
+CREATE PROCEDURE `initiatePasswordResetAdmin` (
+    IN p_username VARCHAR(50),
+    IN p_reset_token VARCHAR(100)
+)
+BEGIN
+    UPDATE admins
+    SET password_reset_token = p_reset_token,
+        password_reset_expires = DATE_ADD(NOW(), INTERVAL 15 MINUTE)
+    WHERE username = p_username;
+    SELECT phone_number FROM admins WHERE username = p_username;
+END$$
+DELIMITER ;
+
+-- Verify password reset token for admin
+DELIMITER $$
+CREATE PROCEDURE `verifyPasswordResetTokenAdmin` (
+    IN p_username VARCHAR(50),
+    IN p_token VARCHAR(100)
+)
+BEGIN
+    SELECT id, username
+    FROM admins
+    WHERE username = p_username
+    AND password_reset_token = p_token
+    AND password_reset_expires > NOW();
+END$$
+DELIMITER ;
+
+-- Reset password for admin
+DELIMITER $$
+CREATE PROCEDURE `resetPasswordAdmin` (
+    IN p_username VARCHAR(50),
+    IN p_new_password VARCHAR(255)
+)
+BEGIN
+    UPDATE admins
+    SET password = p_new_password,
+        password_reset_token = NULL,
+        password_reset_expires = NULL,
+        verification_code = NULL,
+        verification_expires = NULL
+    WHERE username = p_username;
+END$$
+DELIMITER ;
 
 -- Cleanup event: delete rejected residents older than 10 days
 -- NOTE: MySQL event scheduler must be enabled (SET GLOBAL event_scheduler = ON) for this to run.

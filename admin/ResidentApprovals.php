@@ -72,26 +72,7 @@ foreach ($allResidents as $r) {
   <?php endif; ?>
 
   <div class="admin-layout">
-    <aside class="sidebar">
-      <div class="brand">Admin</div>
-      <nav>
-        <div class="sidebar-links">
-          <a href="AdminDashboard.php">Dashboard</a>
-          <div class="dropdown">
-            <button class="dropbtn">Requests ▾</button>
-            <div class="dropdown-content">
-              <a href="AdminDashboard.php?type=registration">Registration Requests</a>
-              <a href="AdminDashboard.php?type=document">Document Requests</a>
-              <a href="AdminDashboard.php">All Requests</a>
-            </div>
-          </div>
-          <a href="ResidentApprovals.php">Resident Approvals</a>
-          <a href="AttendanceView.php">Attendance</a>
-          <a href="../announcements/AnnouncementsList.php">Announcements</a>
-          <a href="../logout.php" class="btn outline small">Logout</a>
-        </div>
-      </nav>
-    </aside>
+    <?php include __DIR__ . '/sidebar.php'; ?>
         
     <main class="main-content">
       <h1>Resident Account Approvals</h1>
@@ -130,14 +111,14 @@ foreach ($allResidents as $r) {
       <section>
         <h2>Pending Resident Registrations</h2>
         <div class="search-container">
-          <input type="text" id="pendingSearch" class="search-input" placeholder="🔍 Search by name or email..." onkeyup="filterTable('pendingResidentsTable', 'pendingSearch')">
+          <input type="text" id="pendingSearch" class="search-input" placeholder="🔍 Search by name or phone number..." onkeyup="filterTable('pendingResidentsTable', 'pendingSearch')">
         </div>
         <table id="pendingResidentsTable">
           <thead>
             <tr>
               <th>ID</th>
               <th>Full Name</th>
-              <th>Email</th>
+              <th>Phone Number</th>
               <th>Registration Date</th>
               <th>Status</th>
               <th>Actions</th>
@@ -149,14 +130,14 @@ foreach ($allResidents as $r) {
               foreach ($pendingResidents as $resident) {
                 $id = htmlspecialchars($resident['id'], ENT_QUOTES, 'UTF-8');
                 $fullName = htmlspecialchars($resident['full_name'], ENT_QUOTES, 'UTF-8');
-                $email = htmlspecialchars($resident['email'], ENT_QUOTES, 'UTF-8');
+                $phoneNumber = htmlspecialchars($resident['phone_number'] ?? 'N/A', ENT_QUOTES, 'UTF-8');
                 $createdAt = htmlspecialchars($resident['created_at'], ENT_QUOTES, 'UTF-8');
                 $status = htmlspecialchars($resident['approval_status'], ENT_QUOTES, 'UTF-8');
 
                 echo "<tr>
                   <td>{$id}</td>
                   <td>{$fullName}</td>
-                  <td>{$email}</td>
+                  <td>{$phoneNumber}</td>
                   <td>{$createdAt}</td>
                   <td><span class='status-badge status-pending'>{$status}</span></td>
                   <td>
@@ -191,14 +172,14 @@ foreach ($allResidents as $r) {
       <section class="chart-section">
         <h2>All Residents</h2>
         <div class="search-container">
-          <input type="text" id="allResidentsSearch" class="search-input" placeholder="🔍 Search by name or email..." onkeyup="filterTable('allResidentsTable', 'allResidentsSearch')">
+          <input type="text" id="allResidentsSearch" class="search-input" placeholder="🔍 Search by name or phone number..." onkeyup="filterTable('allResidentsTable', 'allResidentsSearch')">
         </div>
         <table id="allResidentsTable">
           <thead>
             <tr>
               <th>ID</th>
               <th>Full Name</th>
-              <th>Email</th>
+              <th>Phone Number</th>
               <th>Registration Date</th>
               <th>Status</th>
             </tr>
@@ -209,7 +190,7 @@ foreach ($allResidents as $r) {
               foreach ($allResidents as $resident) {
                 $id = htmlspecialchars($resident['id'], ENT_QUOTES, 'UTF-8');
                 $fullName = htmlspecialchars($resident['full_name'], ENT_QUOTES, 'UTF-8');
-                $email = htmlspecialchars($resident['email'], ENT_QUOTES, 'UTF-8');
+                $phoneNumber = htmlspecialchars($resident['phone_number'] ?? 'N/A', ENT_QUOTES, 'UTF-8');
                 $createdAt = htmlspecialchars($resident['created_at'], ENT_QUOTES, 'UTF-8');
                 $status = htmlspecialchars($resident['approval_status'], ENT_QUOTES, 'UTF-8');
                 
@@ -220,7 +201,7 @@ foreach ($allResidents as $r) {
                 echo "<tr>
                   <td>{$id}</td>
                   <td>{$fullName}</td>
-                  <td>{$email}</td>
+                  <td>{$phoneNumber}</td>
                   <td>{$createdAt}</td>
                   <td><span class='status-badge {$statusClass}'>{$status}</span></td>
                 </tr>";
@@ -323,12 +304,12 @@ foreach ($allResidents as $r) {
         const cells = row.getElementsByTagName('td');
 
         if (cells.length > 0) {
-          // Get name (column 1) and email (column 2)
+          // Get name (column 1) and phone number (column 2)
           const name = cells[1] ? cells[1].textContent.toLowerCase() : '';
-          const email = cells[2] ? cells[2].textContent.toLowerCase() : '';
+          const phoneNumber = cells[2] ? cells[2].textContent.toLowerCase() : '';
 
-          // Check if filter matches name or email
-          if (name.includes(filter) || email.includes(filter)) {
+          // Check if filter matches name or phone number
+          if (name.includes(filter) || phoneNumber.includes(filter)) {
             row.style.display = '';
             visibleCount++;
           } else {

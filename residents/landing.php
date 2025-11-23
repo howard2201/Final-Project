@@ -71,7 +71,7 @@ if (isset($_SESSION['success_message'])) {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Welcome — Bagong Pook Community Service</title>
-<link rel="stylesheet" href="../css/residents.css">
+<link rel="stylesheet" href="../css/landing.css">
 <script src="../js/alerts.js"></script>
 </head>
 <body>

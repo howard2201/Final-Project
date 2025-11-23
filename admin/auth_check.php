@@ -10,6 +10,22 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
+// Helper function to get admin login URL
+function getAdminLoginUrl() {
+    // Get the script that called this file
+    $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
+    $callerFile = $backtrace[1]['file'] ?? $_SERVER['SCRIPT_FILENAME'];
+    
+    // Check if caller is in chatting folder
+    if (strpos($callerFile, DIRECTORY_SEPARATOR . 'chatting' . DIRECTORY_SEPARATOR) !== false) {
+        // From chatting folder, go up two levels then into admin
+        return '../../admin/AdminLogin.php';
+    } else {
+        // From admin folder or elsewhere, use relative path
+        return 'AdminLogin.php';
+    }
+}
+
 // Check if admin is logged in
 if (!isset($_SESSION['admin_id']) || empty($_SESSION['admin_id'])) {
     // Store the attempted page to redirect back after login
@@ -22,12 +38,12 @@ if (!isset($_SESSION['admin_id']) || empty($_SESSION['admin_id'])) {
     $_SESSION['login_error'] = "You must be logged in as an administrator to access this page.";
 
     // Redirect to admin login page
-    header("Location: AdminLogin.php");
+    header("Location: " . getAdminLoginUrl());
     exit;
 }
 
 // Validate session - check if admin still exists in database
-require_once '../config/Database.php';
+require_once __DIR__ . '/../config/Database.php';
 $pdo = Database::getInstance()->getConnection();
 
 try {
@@ -38,7 +54,7 @@ try {
 } catch (PDOException $e) {
     error_log("Admin auth check error: " . $e->getMessage());
     session_destroy();
-    header('Location: AdminLogin.php');
+    header('Location: ' . getAdminLoginUrl());
     exit;
 }
 
@@ -48,7 +64,7 @@ if (!$admin) {
     session_destroy();
     session_start();
     $_SESSION['login_error'] = "Invalid session. Please log in again.";
-    header("Location: AdminLogin.php");
+    header("Location: " . getAdminLoginUrl());
     exit;
 }
 
@@ -66,7 +82,7 @@ if (isset($_SESSION['admin_last_activity'])) {
         session_start();
         $_SESSION['login_error'] = "Your session has expired due to inactivity. Please log in again.";
 
-        header("Location: AdminLogin.php");
+        header("Location: " . getAdminLoginUrl());
         exit;
     }
 }

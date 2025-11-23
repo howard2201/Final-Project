@@ -1,0 +1,276 @@
+/* ========================================
+   VARIABLES
+   ======================================== */
+:root {
+  --primary-green: #2c7a2c;
+  --secondary-green: #f2faf2;
+  --white: #ffffff;
+  --accent-yellow: #ffc107;
+  --text-dark: #1f1f1f;
+  --text-light: #555555;
+  --btn-hover: #1b5e1b;
+  --card-shadow: rgba(0, 0, 0, 0.08);
+  --transition-speed: 0.3s;
+}
+
+/* ========================================
+   RESET & BASE
+   ======================================== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Inter", system-ui, Arial, sans-serif;
+  background-color: var(--secondary-green);
+  color: var(--text-dark);
+  line-height: 1.6;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ========================================
+   HERO SECTION
+   ======================================== */
+.hero {
+  background-color: var(--white);
+  padding: 4rem 0;
+  box-shadow: 0 4px 12px var(--card-shadow);
+  margin: 2rem 0;
+}
+
+.hero-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.hero-copy h1 {
+  font-size: 2.5rem;
+  color: var(--primary-green);
+  margin-bottom: 1rem;
+  position: relative;
+  padding-bottom: 0.5rem;
+}
+
+.hero-copy h1::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 60px;
+  height: 4px;
+  background-color: var(--accent-yellow);
+}
+
+.hero-copy p {
+  font-size: 1.1rem;
+  color: var(--text-light);
+  margin-bottom: 1.5rem;
+}
+
+.hero-actions .btn {
+  background-color: var(--primary-green);
+  color: var(--white);
+  padding: 0.8rem 1.6rem;
+  font-weight: 600;
+  transition: all var(--transition-speed);
+  margin-right: 1rem;
+}
+
+.hero-actions .btn:hover {
+  background-color: var(--btn-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px var(--card-shadow);
+}
+
+.hero-actions .btn.outline {
+  background-color: transparent;
+  border: 2px solid var(--primary-green);
+  color: var(--primary-green);
+  padding: 0.8rem 1.6rem;
+  font-weight: 600;
+  transition: all var(--transition-speed);
+}
+
+.hero-actions .btn.outline:hover {
+  background-color: var(--primary-green);
+  color: var(--white);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px var(--card-shadow);
+}
+
+.hero-image img {
+  margin: 5rem;
+  max-width: 320px;
+  display: flex;
+}
+
+/* ========================================
+   LOGOUT MESSAGE
+   ======================================== */
+.logout-message {
+  background-color: #e6f7e6;
+  border-left: 6px solid var(--accent-yellow);
+  padding: 1rem 1.5rem;
+  margin: 1.5rem auto;
+  width: 90%;
+  max-width: 600px;
+  box-shadow: 0 2px 6px var(--card-shadow);
+}
+
+/* ========================================
+   FEATURES / SCROLLABLE CARDS
+   ======================================== */
+.features h2 {
+  font-size: 2rem;
+  color: var(--primary-green);
+  margin-bottom: 1rem;
+  border-bottom: 4px solid var(--accent-yellow);
+  padding-bottom: 0.5rem;
+}
+
+.scroll-cards {
+  display: flex;
+  overflow-x: auto;
+  gap: 1.5rem;
+  padding-bottom: 1rem;
+  scroll-behavior: smooth;
+}
+
+.scroll-cards::-webkit-scrollbar {
+  height: 8px;
+}
+
+.scroll-cards::-webkit-scrollbar-thumb {
+  background-color: var(--accent-yellow);
+}
+
+.card {
+  min-width: 250px;
+  background-color: var(--white);
+  padding: 1.2rem;
+  box-shadow: 0 4px 12px var(--card-shadow);
+  transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+  flex-shrink: 0;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 16px var(--card-shadow);
+}
+
+.card h3 {
+  color: var(--primary-green);
+  margin-bottom: 0.5rem;
+  font-size: 1.2rem;
+}
+
+.card p {
+  font-size: 0.95rem;
+  color: var(--text-light);
+}
+
+/* ========================================
+   HISTORY SECTION
+   ======================================== */
+.history-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+  margin-top: 5rem;
+  margin-bottom: 5rem;
+}
+
+.history-section h2 {
+  font-size: 2rem;
+  color: var(--primary-green);
+  margin-bottom: 1rem;
+  border-bottom: 4px solid var(--accent-yellow);
+  padding-bottom: 0.5rem;
+}
+
+.history-section .btn.outline {
+  border: 2px solid var(--primary-green);
+  color: var(--primary-green);
+  background: transparent;
+  padding: 0.6rem 1.2rem;
+  font-weight: 600;
+  transition: all var(--transition-speed);
+  margin-bottom: 50px;
+}
+
+.history-section .btn.outline:hover {
+  background-color: var(--primary-green);
+  color: var(--white);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px var(--card-shadow);
+}
+
+/* ========================================
+   MODAL
+   ======================================== */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.modal-content {
+  background-color: var(--white);
+  padding: 2rem;
+  max-width: 700px;
+  width: 90%;
+  max-height: 80%;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 6px 20px var(--card-shadow);
+}
+
+.modal-content h2 {
+  color: var(--primary-green);
+  margin-bottom: 1rem;
+  border-bottom: 3px solid var(--accent-yellow);
+  padding-bottom: 0.4rem;
+}
+
+.modal-content .close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  color: var(--primary-green);
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+@media (max-width: 768px) {
+  .scroll-cards {
+    gap: 1rem;
+  }
+}
+

@@ -190,16 +190,22 @@ a {
 }
 
 .auth-card input[type="email"],
-.auth-card input[type="password"] {
+.auth-card input[type="password"],
+.auth-card input[type="text"],
+.auth-card input[type="tel"] {
   padding: 0.7rem 1rem;
   margin-top: 0.3rem;
   border: 1px solid #ccc;
+  border-radius: 4px;
   font-size: 0.95rem;
+  width: 100%;
   transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
 }
 
 .auth-card input[type="email"]:focus,
-.auth-card input[type="password"]:focus {
+.auth-card input[type="password"]:focus,
+.auth-card input[type="text"]:focus,
+.auth-card input[type="tel"]:focus {
   outline: none;
   border-color: var(--primary-green);
   box-shadow: 0 0 5px rgba(44, 122, 44, 0.5);
@@ -480,18 +486,21 @@ a {
    ======================================== */
 .auth-card input[type="text"],
 .auth-card input[type="email"],
-.auth-card input[type="password"] {
+.auth-card input[type="password"],
+.auth-card input[type="tel"] {
   padding: 0.7rem 1rem;
   margin-top: 0.3rem;
   border: 1px solid #ccc;
-
+  border-radius: 4px;
   font-size: 0.95rem;
+  width: 100%;
   transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
 }
 
 .auth-card input[type="text"]:focus,
 .auth-card input[type="email"]:focus,
-.auth-card input[type="password"]:focus {
+.auth-card input[type="password"]:focus,
+.auth-card input[type="tel"]:focus {
   outline: none;
   border-color: var(--primary-green);
   box-shadow: 0 0 5px rgba(44, 122, 44, 0.5);

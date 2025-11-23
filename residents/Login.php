@@ -5,26 +5,24 @@ require_once 'Resident.php';
 $residentClass = new Resident();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = trim($_POST['email']);
+    $username = trim($_POST['username']);
     $password = $_POST['password'];
 
     // Validate inputs
-    if (empty($email)) {
-        $error = "Please enter your email address.";
+    if (empty($username)) {
+        $error = "Please enter your username.";
     } elseif (empty($password)) {
         $error = "Please enter your password.";
-    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $error = "Please enter a valid email address.";
     } else {
         try {
-            $resident = $residentClass->login($email, $password);
+            $resident = $residentClass->login($username, $password);
             if ($resident) {
                 // Check approval status
                 if ($resident['approval_status'] === 'Pending') {
                     // Store resident info in session for temporary page
                     $_SESSION['pending_resident_id'] = $resident['id'];
                     $_SESSION['pending_resident_name'] = $resident['full_name'];
-                    $_SESSION['pending_resident_email'] = $resident['email'];
+                    $_SESSION['pending_resident_phone_number'] = $resident['phone_number'] ?? '';
                     header('Location: Temporary_Page.php');
                     exit;
                 } elseif ($resident['approval_status'] === 'Rejected') {
@@ -47,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $error = "There is an issue with your account status. Please contact the barangay office.";
                 }
             } else {
-                $error = "The email or password you entered is incorrect. Please try again.";
+                $error = "Invalid username or password. The credentials you entered do not exist in our system. Please check your username and password, or use the 'Forgot Password' option if you've forgotten your credentials.";
             }
         } catch (Exception $e) {
             $error = "We're having trouble logging you in right now. Please try again in a moment.";
@@ -62,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Login — Prototype</title>
-  <link rel="stylesheet" href="../css/residents.css">
+  <link rel="stylesheet" href="../css/Login.css">
   <script src="../js/alerts.js"></script>
 </head>
 <body>
@@ -82,15 +80,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <img src="../assets/img/logo.png" alt="logo">
   <div class="auth-card">
     <h2>Resident Login</h2>
-    <?php if(isset($error)): ?>
-      <div class="alert-error">
+    <?php if(isset($error) && !empty($error)): ?>
+      <div class="alert-error" style="margin-bottom: 1.5rem; padding: 1rem; background-color: #fee; border-left: 4px solid #e63946; color: #b71c1c; border-radius: 4px;">
         <strong>⚠️ Login Failed</strong>
-        <p><?php echo htmlspecialchars($error); ?></p>
+        <p style="margin-top: 0.5rem; margin-bottom: 0;"><?php echo htmlspecialchars($error); ?></p>
       </div>
     <?php endif; ?>
     <form method="POST">
-      <label>Email
-        <input type="email" name="email" required>
+      <label>Username
+        <input type="text" name="username" required>
       </label>
       <label>Password
         <input type="password" name="password" required>
@@ -98,6 +96,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <div class="auth-actions">
         <button type="submit" class="btn">Login</button>
         <a href="Register.php" class="btn outline">Register</a>
+      </div>
+      <div style="margin-top: 10px; text-align: center;">
+        <a href="ForgotPassword.php" style="color: #007bff; text-decoration: none; font-size: 0.9em;">Forgot Password?</a>
       </div>
     </form>
 

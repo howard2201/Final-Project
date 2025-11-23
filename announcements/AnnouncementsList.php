@@ -16,19 +16,39 @@ if ($isAdmin && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_an
     $body = trim($_POST['body']);
 
     if (empty($title)) {
-        $error = "Please enter an announcement title.";
+        $_SESSION['error_message'] = "Please enter an announcement title.";
+        header("Location: AnnouncementsList.php");
+        exit;
     } elseif (empty($body)) {
-        $error = "Please enter announcement content.";
+        $_SESSION['error_message'] = "Please enter announcement content.";
+        header("Location: AnnouncementsList.php");
+        exit;
     } else {
         try {
             $stmt = $pdo->prepare("CALL createAnnouncement(?, ?)");
             $stmt->execute([$title, $body]);
-            $_SESSION['success_message'] = "✓ Announcement created successfully!";
+            
+            // Consume the result set from stored procedure
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            $stmt->closeCursor();
+            
+            if ($result && isset($result['last_id'])) {
+                $_SESSION['success_message'] = "✓ Announcement created successfully!";
+            } else {
+                $_SESSION['error_message'] = "Failed to create announcement. Please try again.";
+            }
             header("Location: AnnouncementsList.php");
             exit;
         } catch (PDOException $e) {
-            $error = "Failed to create announcement. Please try again.";
             error_log("Create announcement error: " . $e->getMessage());
+            $_SESSION['error_message'] = "Failed to create announcement. Please try again.";
+            header("Location: AnnouncementsList.php");
+            exit;
+        } catch (Exception $e) {
+            error_log("Create announcement error: " . $e->getMessage());
+            $_SESSION['error_message'] = "An error occurred while creating the announcement. Please try again.";
+            header("Location: AnnouncementsList.php");
+            exit;
         }
     }
 }
@@ -72,6 +92,12 @@ if (isset($_SESSION['success_message'])) {
     $success = $_SESSION['success_message'];
     unset($_SESSION['success_message']);
 }
+
+// Check for error message
+if (isset($_SESSION['error_message'])) {
+    $error = $_SESSION['error_message'];
+    unset($_SESSION['error_message']);
+}
 ?>
 
 <!DOCTYPE html>
@@ -80,11 +106,13 @@ if (isset($_SESSION['success_message'])) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Announcements — Smart Barangay System</title>
-  <link rel="stylesheet" href="../css/announcements.css">
-  <link rel="stylesheet" href="../css/admin.css">
+  <link rel="stylesheet" href="../css/AnnouncementsList.css">
   <script src="../js/alerts.js"></script>
 </head>
-<body <?php if ($success) echo 'data-success-message="' . htmlspecialchars($success) . '"'; ?>>
+<body <?php 
+    if ($success) echo 'data-success-message="' . htmlspecialchars($success) . '"'; 
+    if ($error) echo 'data-error-message="' . htmlspecialchars($error) . '"';
+?>>
 
 <?php if ($isAdmin): ?>
   <!-- Admin Layout with Sidebar -->
@@ -113,7 +141,17 @@ if (isset($_SESSION['success_message'])) {
 <?php endif; ?>
 
 <?php if ($error): ?>
-  <div class="error-message"><?php echo htmlspecialchars($error); ?></div>
+  <div class="alert-error" style="margin-bottom: 1.5rem; padding: 1rem; background-color: #fee; border-left: 4px solid #e63946; color: #b71c1c; border-radius: 4px;">
+    <strong>⚠️ Error</strong>
+    <p style="margin-top: 0.5rem; margin-bottom: 0;"><?php echo htmlspecialchars($error); ?></p>
+  </div>
+<?php endif; ?>
+
+<?php if ($success): ?>
+  <div class="success-message" style="margin-bottom: 1.5rem; padding: 1rem; background-color: #e8f8e8; border-left: 4px solid #2ecc71; color: #2b7a36; border-radius: 4px;">
+    <strong>✓ Success</strong>
+    <p style="margin-top: 0.5rem; margin-bottom: 0;"><?php echo htmlspecialchars($success); ?></p>
+  </div>
 <?php endif; ?>
 
 <!-- Admin Create Announcement Form -->

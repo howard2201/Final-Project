@@ -143,6 +143,7 @@ foreach ($requests as $r) {
                   <td><span class='status-badge status-".strtolower($status)."'>${status}</span></td>
                   <td class='documents-cell'>
                     " . ($idFile ? "<button type='button' class='btn small outline' onclick=\"viewRequestFile({$id}, 'id', '{$fullNameAttr}')\">📄 ID</button>" : "<span class='muted'>No ID File</span>") . "
+                    " . ($residencyFile ? "<button type='button' class='btn small outline' onclick=\"viewRequestFile({$id}, 'residency', '{$fullNameAttr}')\">📄 Proof</button>" : "") . "
                   </td>
                   <td>
                     <form method='POST' class='inline-form'>
@@ -165,16 +166,20 @@ foreach ($requests as $r) {
     </main>
   </div>
 
+  <!-- File Viewer Modal -->
   <div id="requestFileModal" class="file-modal">
     <div class="file-modal-content">
       <div class="file-modal-header">
         <h3 id="requestFileTitle">View Document</h3>
         <div class="file-modal-controls">
+          <button class="zoom-btn" onclick="zoomInRequest()" title="Zoom In">🔍+</button>
+          <button class="zoom-btn" onclick="zoomOutRequest()" title="Zoom Out">🔍−</button>
+          <button class="zoom-btn" onclick="resetZoomRequest()" title="Reset View">↺</button>
           <button class="file-modal-close" onclick="closeRequestFileModal()">&times;</button>
         </div>
       </div>
-      <div class="file-modal-body">
-        <iframe id="requestFileFrame" title="Request Document Viewer"></iframe>
+      <div class="file-modal-body" id="requestImageViewerContainer">
+        <img id="requestFileImage" src="" alt="Document" />
       </div>
     </div>
   </div>
@@ -211,27 +216,123 @@ foreach ($requests as $r) {
       }, 100);
     });
 
+    // File viewer functions with zoom
+    let currentZoomRequest = 1;
+    let isDraggingRequest = false;
+    let startXRequest, startYRequest, scrollLeftRequest, scrollTopRequest;
+
     function viewRequestFile(requestId, fileType, residentName) {
       const modal = document.getElementById('requestFileModal');
-      const frame = document.getElementById('requestFileFrame');
+      const img = document.getElementById('requestFileImage');
       const title = document.getElementById('requestFileTitle');
-      const label = fileType === 'id' ? 'Valid ID' : 'Residency Proof';
 
-      title.textContent = `${residentName} — ${label}`;
-      frame.src = `ViewRequestFile.php?id=${requestId}&type=${fileType}`;
+      const fileTypeLabel = fileType === 'id' ? 'Valid ID' : 'Residency Proof';
+      title.textContent = `${residentName} — ${fileTypeLabel}`;
+
+      img.src = `ViewRequestFile.php?id=${requestId}&type=${fileType}`;
       modal.style.display = 'block';
+      resetZoomRequest();
     }
 
     function closeRequestFileModal() {
       const modal = document.getElementById('requestFileModal');
-      const frame = document.getElementById('requestFileFrame');
-      frame.src = '';
+      const img = document.getElementById('requestFileImage');
+
       modal.style.display = 'none';
+      img.src = '';
+      currentZoomRequest = 1;
     }
 
+    function zoomInRequest() {
+      currentZoomRequest += 0.25;
+      if (currentZoomRequest > 5) currentZoomRequest = 5; // Max zoom 500%
+      applyZoomRequest();
+    }
+
+    function zoomOutRequest() {
+      currentZoomRequest -= 0.25;
+      if (currentZoomRequest < 0.5) currentZoomRequest = 0.5; // Min zoom 50%
+      applyZoomRequest();
+    }
+
+    function resetZoomRequest() {
+      currentZoomRequest = 1;
+      const container = document.getElementById('requestImageViewerContainer');
+      const img = document.getElementById('requestFileImage');
+
+      img.style.transform = 'scale(1)';
+      img.style.cursor = 'default';
+      container.scrollLeft = 0;
+      container.scrollTop = 0;
+    }
+
+    function applyZoomRequest() {
+      const img = document.getElementById('requestFileImage');
+      img.style.transform = `scale(${currentZoomRequest})`;
+      img.style.cursor = currentZoomRequest > 1 ? 'grab' : 'default';
+    }
+
+    // Enable dragging when zoomed in
+    const requestContainer = document.getElementById('requestImageViewerContainer');
+    const requestImg = document.getElementById('requestFileImage');
+
+    if (requestImg) {
+      requestImg.addEventListener('mousedown', (e) => {
+        if (currentZoomRequest > 1) {
+          isDraggingRequest = true;
+          requestImg.style.cursor = 'grabbing';
+          startXRequest = e.pageX - requestContainer.offsetLeft;
+          startYRequest = e.pageY - requestContainer.offsetTop;
+          scrollLeftRequest = requestContainer.scrollLeft;
+          scrollTopRequest = requestContainer.scrollTop;
+        }
+      });
+    }
+
+    if (requestContainer) {
+      requestContainer.addEventListener('mouseleave', () => {
+        isDraggingRequest = false;
+        if (currentZoomRequest > 1 && requestImg) requestImg.style.cursor = 'grab';
+      });
+
+      requestContainer.addEventListener('mouseup', () => {
+        isDraggingRequest = false;
+        if (currentZoomRequest > 1 && requestImg) requestImg.style.cursor = 'grab';
+      });
+
+      requestContainer.addEventListener('mousemove', (e) => {
+        if (!isDraggingRequest) return;
+        e.preventDefault();
+        const x = e.pageX - requestContainer.offsetLeft;
+        const y = e.pageY - requestContainer.offsetTop;
+        const walkX = (x - startXRequest) * 2;
+        const walkY = (y - startYRequest) * 2;
+        requestContainer.scrollLeft = scrollLeftRequest - walkX;
+        requestContainer.scrollTop = scrollTopRequest - walkY;
+      });
+
+      // Mouse wheel zoom
+      requestContainer.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        if (e.deltaY < 0) {
+          zoomInRequest();
+        } else {
+          zoomOutRequest();
+        }
+      });
+    }
+
+    // Close modal when clicking outside
     window.addEventListener('click', (event) => {
       const modal = document.getElementById('requestFileModal');
       if (event.target === modal) {
+        closeRequestFileModal();
+      }
+    });
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
         closeRequestFileModal();
       }
     });

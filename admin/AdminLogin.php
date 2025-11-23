@@ -16,18 +16,16 @@ if (isset($_SESSION['login_error'])) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = trim($_POST['email']);
+    $username = trim($_POST['username']);
     $password = $_POST['password'];
 
-    if (empty($email)) {
-        $error = "Please enter your email address.";
+    if (empty($username)) {
+        $error = "Please enter your username.";
     } elseif (empty($password)) {
         $error = "Please enter your password.";
-    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $error = "Please enter a valid email address.";
     } else {
         try {
-            $user = $admin->login($email, $password);
+            $user = $admin->login($username, $password);
 
             if ($user) {
                 $_SESSION['admin_id'] = $user['id'];
@@ -40,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 header("Location: AdminDashboard.php");
                 exit;
             } else {
-                $error = "The email or password you entered is incorrect.";
+                $error = "Invalid username or password. The credentials you entered do not exist in our system. Please check your username and password, or use the 'Forgot Password' option if you've forgotten your credentials.";
             }
         } catch (Exception $e) {
             $error = "We're experiencing technical difficulties. Please try again later.";
@@ -56,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Admin Login — Smart Barangay System</title>
-    <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="../css/AdminLogin.css">
     <script src="../js/alerts.js"></script>
 </head>
 <body>
@@ -80,21 +78,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <p class="auth-subtitle">Administrator Access Only</p>
 
         <?php if (!empty($error)): ?>
-            <div class="alert-error">
+            <div class="alert-error" style="margin-bottom: 1.5rem; padding: 1rem; background-color: #fee; border-left: 4px solid #e63946; color: #b71c1c; border-radius: 4px;">
                 <strong>⚠️ Login Failed</strong>
-                <p><?php echo htmlspecialchars($error); ?></p>
+                <p style="margin-top: 0.5rem; margin-bottom: 0;"><?php echo htmlspecialchars($error); ?></p>
             </div>
         <?php endif; ?>
 
         <form method="POST">
-            <label>Email Address
-                <input type="email" name="email" placeholder="admin@gmail.com" required>
+            <label>Username
+                <input type="text" name="username" placeholder="Enter your username" required>
             </label>
             <label>Password
                 <input type="password" name="password" placeholder="Enter your password" required>
             </label>
             <div class="auth-actions">
                 <button type="submit" class="btn">Login as Admin</button>
+            </div>
+            <div style="margin-top: 10px; text-align: center;">
+                <a href="ForgotPassword.php" style="color: #007bff; text-decoration: none; font-size: 0.9em;">Forgot Password?</a>
             </div>
         </form>
 

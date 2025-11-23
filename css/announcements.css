@@ -1,14 +1,14 @@
 /* ========================================
-   VARIABLES (Facebook Colors)
+   VARIABLES (Green Palette - Matching Homepage)
    ======================================== */
 :root {
-  --primary-green: #1877f2;     /* Facebook Blue */
-  --secondary-green: #dfdede;   /* Facebook Light Gray Background */
+  --primary-green: #2c7a2c;     /* Main green */
+  --secondary-green: #f2faf2;   /* Light green background */
   --white: #ffffff;
-  --accent-yellow: #a7a7a7;     /* FB card separators / light gray accents */
-  --text-dark: #1c1e21;         /* FB dark text */
-  --text-light: #65676b;        /* FB secondary text */
-  --btn-hover: #165ecc;         /* FB hover blue */
+  --accent-yellow: #ffc107;     /* Accent yellow */
+  --text-dark: #1f1f1f;
+  --text-light: #555555;
+  --btn-hover: #1b5e1b;         /* Darker green for hover */
   --card-shadow: rgba(0, 0, 0, 0.08);
   --transition-speed: 0.3s;
 }
@@ -132,6 +132,48 @@ footer {
 }
 
 /* ========================================
+   BUTTONS (Green Theme)
+   ======================================== */
+.announcement-form .btn-primary,
+.announcement-filter-form .btn-primary,
+.announcement-filter-form .btn:not(.outline) {
+  background-color: var(--primary-green);
+  color: var(--white);
+  border: none;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all var(--transition-speed);
+}
+
+.announcement-form .btn-primary:hover,
+.announcement-filter-form .btn-primary:hover,
+.announcement-filter-form .btn:not(.outline):hover {
+  background-color: var(--btn-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(44, 122, 44, 0.3);
+}
+
+.announcement-filter-form .btn.outline {
+  background-color: transparent;
+  border: 2px solid var(--primary-green);
+  color: var(--primary-green);
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all var(--transition-speed);
+}
+
+.announcement-filter-form .btn.outline:hover {
+  background-color: var(--primary-green);
+  color: var(--white);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(44, 122, 44, 0.3);
+}
+
+/* ========================================
    ANNOUNCEMENTS (Facebook Style, No Border Radius)
    ======================================== */
 .announcements-public-section {
@@ -176,7 +218,7 @@ footer {
 .announcement-header h3 {
   font-size: 1.3rem; /* bigger title */
   font-weight: 600;
-  color: #1877f2; /* FB blue */
+  color: var(--primary-green); /* Green matching homepage */
   margin: 0; /* remove spacing since inline with avatar */
 }
 
