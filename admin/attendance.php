@@ -41,22 +41,36 @@ try {
 
     // Sanitize and validate input
     $name = trim($_POST['name']);
-    
-    // Validate name length
-    if (strlen($name) < 2 || strlen($name) > 255) {
+    $cleanName = iconv('UTF-8', 'UTF-8//IGNORE', $name);
+    if ($cleanName === false) {
+        $cleanName = '';
+    }
+    $name = preg_replace('/[\x00-\x1F\x7F]/', '', $cleanName);
+    $name = preg_replace('/[^\p{L}\s\-\'\.]/u', '', $name);
+
+    if ($name === '') {
+        http_response_code(400);
+        echo "No name provided";
+        exit;
+    }
+
+    // Validate name length using multibyte-safe check
+    $nameLength = mb_strlen($name, 'UTF-8');
+    if ($nameLength < 2 || $nameLength > 255) {
         http_response_code(400);
         echo "Invalid name length";
         exit;
     }
 
     // Validate name contains only letters, spaces, and basic characters
-    if (!preg_match('/^[a-zA-Z\s\-\'\.]+$/u', $name)) {
+    if (!preg_match('/^[\p{L}\s\-\'\.]+$/u', $name)) {
         http_response_code(400);
         echo "Invalid name format";
         exit;
     }
 
     $now = date("Y-m-d H:i:s");
+    $today = date("Y-m-d");
     $response = "";
 
     try {
@@ -76,8 +90,20 @@ try {
         if ($row) {
             // Validate the row has required fields
             // Use array_key_exists instead of isset because time_out can be NULL
-            if (!array_key_exists('id', $row) || !array_key_exists('time_out', $row)) {
+            if (
+                !array_key_exists('id', $row) ||
+                !array_key_exists('time_out', $row) ||
+                !array_key_exists('time_in', $row)
+            ) {
                 throw new Exception("Invalid record structure from database");
+            }
+
+            $lastAttendanceDate = $row['time_in'] ? date("Y-m-d", strtotime($row['time_in'])) : null;
+
+            if (!is_null($row['time_out']) && $lastAttendanceDate === $today) {
+                http_response_code(429);
+                echo "Daily limit reached";
+                exit;
             }
 
             if (is_null($row['time_out'])) {
