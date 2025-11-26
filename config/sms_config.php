@@ -59,9 +59,9 @@ return [
 
     // Twilio configuration (use when gateway = 'twilio')
     'twilio' => [
-        'account_sid' => getenv('TWILIO_ACCOUNT_SID') ?: 'AC9fb560b247fdf5e22cc1ca64ecbd578e',
-        'auth_token' => getenv('TWILIO_AUTH_TOKEN') ?: '7743411ddd1066d1176644096b8eec36',
-        'from_number' => getenv('TWILIO_FROM_NUMBER') ?: '+639662707009',
+        'account_sid' => getenv('TWILIO_ACCOUNT_SID') ?: '',
+        'auth_token' => getenv('TWILIO_AUTH_TOKEN') ?: '',
+        'from_number' => getenv('TWILIO_FROM_NUMBER') ?: '',
     ],
 
     // Internal API token (used by api/sms_gateway.php)
