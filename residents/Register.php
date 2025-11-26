@@ -1,10 +1,30 @@
 <?php
 session_start();
 require_once '../config/Database.php';
-require_once 'Resident.php';
+require_once '../config/SMSService.php';
 
 $error = '';
 $success = '';
+
+/**
+ * Remove any pending registration artifacts (temp files + session values)
+ */
+function clearPendingRegistrationSession()
+{
+    if (isset($_SESSION['pending_registration'])) {
+        $pending = $_SESSION['pending_registration'];
+        if (!empty($pending['id_file_path']) && file_exists($pending['id_file_path'])) {
+            @unlink($pending['id_file_path']);
+        }
+        if (!empty($pending['proof_file_path']) && file_exists($pending['proof_file_path'])) {
+            @unlink($pending['proof_file_path']);
+        }
+        unset($_SESSION['pending_registration']);
+    }
+    if (isset($_SESSION['registration_username'])) {
+        unset($_SESSION['registration_username']);
+    }
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $fullName = trim($_POST['fullName']);
@@ -30,7 +50,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   } elseif (empty($password)) {
     $error = "Please enter a password.";
   } elseif (strlen($password) < 6 || strlen($password) > 16) {
-    $error = "Your password must be at least 6 characters long and a maximum of 16 characters for security.";
+    $error = "Your password must be between 6 and 16 characters long.";
+  } elseif (!preg_match('/[0-9]/', $password) || !preg_match('/[^a-zA-Z0-9]/', $password)) {
+    $error = "Your password must include at least one number and one special character.";
   } else {
     // Handle file uploads
     $registerId = $_FILES['registerId'];
@@ -72,13 +94,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       } elseif (!in_array($proofFileType, $allowedTypes)) {
         $error = "Your proof of residency must be a JPG, PNG, or PDF file.";
       } else {
-        // Read file contents as binary data
-        $idFileContent = file_get_contents($registerId['tmp_name']);
-        $proofFileContent = file_get_contents($registerProof['tmp_name']);
-
-        // Hash the password using SHA-256
-        $hashedPassword = hash('sha256', $password);
-
         try {
           // Get database connection
           $pdo = Database::getInstance()->getConnection();
@@ -86,11 +101,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           // Check if username already exists
           $checkUsernameStmt = $pdo->prepare('CALL checkResidentUsernameExists(?)');
           $checkUsernameStmt->execute([$username]);
+          $usernameExists = $checkUsernameStmt->rowCount() > 0;
+          if (method_exists($checkUsernameStmt, 'closeCursor')) {
+            $checkUsernameStmt->closeCursor();
+          }
 
-          if ($checkUsernameStmt->rowCount() > 0) {
+          if ($usernameExists) {
             $error = "This username is already taken. Please choose a different username.";
           } else {
-            $checkUsernameStmt->closeCursor();
 
             // Format phone number
             $phoneNumber = preg_replace('/[^0-9+]/', '', $phoneNumber);
@@ -102,35 +120,96 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               $phoneNumber = '+63' . $phoneNumber;
             }
 
-            // Insert using stored procedure (email is NULL)
-            $stmt = $pdo->prepare('CALL registerResident(?, ?, ?, ?, ?, ?, ?)');
-            $stmt->execute([$fullName, $username, NULL, $phoneNumber, $hashedPassword, $idFileContent, $proofFileContent]);
+            // Temporarily store files until OTP verification succeeds
+            $pendingDir = realpath(__DIR__ . '/../uploads');
+            if ($pendingDir === false) {
+              $pendingDir = __DIR__ . '/../uploads';
+            }
+            $pendingDir .= '/pending';
+            if (!is_dir($pendingDir)) {
+              mkdir($pendingDir, 0777, true);
+            }
 
-            if ($stmt->rowCount() > 0) {
-              // Store username in session for SMS verification
-              $_SESSION['registration_username'] = $username;
-              
-              // Send verification code
-              require_once '../config/SMSService.php';
-              $residentClass = new Resident();
-              $sent = $residentClass->sendVerificationCode($username);
-              
-              if ($sent) {
-                header("Location: VerifySMS.php");
-                exit;
-              } else {
-                $error = "Account created but failed to send verification code. Please contact support.";
+            $storeTempFile = function ($file, $prefix) use ($pendingDir) {
+              $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+              $tempName = $pendingDir . '/' . uniqid($prefix . '_', true) . ($extension ? '.' . strtolower($extension) : '');
+              if (!move_uploaded_file($file['tmp_name'], $tempName)) {
+                throw new Exception("We couldn't store your {$prefix} file. Please try again.");
               }
+              return $tempName;
+            };
+            $idTempPath = $proofTempPath = null;
+            try {
+              $idTempPath = $storeTempFile($registerId, 'id');
+              $proofTempPath = $storeTempFile($registerProof, 'proof');
+            } catch (Exception $e) {
+              if ($idTempPath && file_exists($idTempPath)) {
+                @unlink($idTempPath);
+              }
+              if ($proofTempPath && file_exists($proofTempPath)) {
+                @unlink($proofTempPath);
+              }
+              throw $e;
+            }
+
+            // Generate and send OTP before creating the account
+            $smsService = new SMSService();
+            $otpCode = SMSService::generateCode();
+            $sent = $smsService->sendVerificationCode($phoneNumber, $otpCode);
+
+            if ($sent) {
+              // Clear any previous pending registration data
+              clearPendingRegistrationSession();
+
+              $_SESSION['pending_registration'] = [
+                'full_name' => $fullName,
+                'username' => $username,
+                'phone_number' => $phoneNumber,
+                'password_hash' => hash('sha256', $password),
+                'id_file_path' => $idTempPath,
+                'proof_file_path' => $proofTempPath,
+                'created_at' => time(),
+                'expires_at' => time() + 600, // 10 minutes validity
+                'otp_hash' => password_hash($otpCode, PASSWORD_DEFAULT),
+                'resend_count' => 0,
+                'can_resend_at' => time() + 60,
+                'otp_display' => $smsService->isProduction() ? null : $otpCode,
+                'mode' => $smsService->getMode()
+              ];
+              $_SESSION['registration_username'] = $username;
+
+              header("Location: VerifySMS.php");
+              exit;
             } else {
-              $error = "We couldn't create your account right now. Please try again or contact the barangay office for help.";
+              $error = "We couldn't send the verification code. Please double-check your phone number or try again later.";
+              if (isset($idTempPath) && file_exists($idTempPath)) {
+                @unlink($idTempPath);
+              }
+              if (isset($proofTempPath) && file_exists($proofTempPath)) {
+                @unlink($proofTempPath);
+              }
             }
           }
         } catch (PDOException $e) {
+          if (isset($idTempPath) && file_exists($idTempPath)) {
+            @unlink($idTempPath);
+          }
+          if (isset($proofTempPath) && file_exists($proofTempPath)) {
+            @unlink($proofTempPath);
+          }
           $error = "We're experiencing technical difficulties. Please try again later or contact the barangay office for assistance.";
           // Log the actual error for developers (in production, log to file)
           error_log("Registration error: " . $e->getMessage());
         } catch (Exception $e) {
-          $error = $e->getMessage();
+          if (isset($idTempPath) && file_exists($idTempPath)) {
+            @unlink($idTempPath);
+          }
+          if (isset($proofTempPath) && file_exists($proofTempPath)) {
+            @unlink($proofTempPath);
+          }
+          if (empty($error)) {
+            $error = $e->getMessage();
+          }
         }
       }
     }
@@ -153,6 +232,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <?php if(isset($_SESSION['success_message'])): ?>
   <div data-success-message="<?php echo htmlspecialchars($_SESSION['success_message']); ?>"></div>
   <?php unset($_SESSION['success_message']); ?>
+<?php endif; ?>
+
+<?php if(isset($_SESSION['error_message'])): ?>
+  <div data-error-message="<?php echo htmlspecialchars($_SESSION['error_message']); ?>"></div>
+  <?php unset($_SESSION['error_message']); ?>
 <?php endif; ?>
 
 <?php if(!empty($error)): ?>
@@ -183,8 +267,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <small style="color: #666; font-size: 0.85em;">Philippine mobile number (e.g., 09123456789)</small>
       </label>
       <label>Password
-        <input type="password" name="password" minlength="6" maxlength="16" required>
-        <small style="color: #666; font-size: 0.85em;">6-16 characters</small>
+        <input type="password" name="password" minlength="6" maxlength="16" pattern="(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{6,16}" title="6-16 characters with at least one number and one special character" required>
+        <small style="color: #666; font-size: 0.85em;">6-16 characters, include at least one number and one special character</small>
       </label>
       <label>Upload Valid ID
         <input type="file" name="registerId" accept=".jpg,.jpeg,.png,.pdf" required>

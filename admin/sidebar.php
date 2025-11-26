@@ -3,6 +3,7 @@
 // Detect if we're being included from chatting folder or admin folder
 $callerFile = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1)[0]['file'] ?? '';
 $isFromChatting = strpos($callerFile, DIRECTORY_SEPARATOR . 'chatting' . DIRECTORY_SEPARATOR) !== false;
+$isFromAnnouncements = strpos($callerFile, DIRECTORY_SEPARATOR . 'announcements' . DIRECTORY_SEPARATOR) !== false;
 
 // Set base path based on location
 if ($isFromChatting) {
@@ -11,6 +12,12 @@ if ($isFromChatting) {
     $announcementsPath = '../../announcements/';
     $logoutPath = '../../logoutadmin.php';
     $messagesPath = 'Messages.php';
+} elseif ($isFromAnnouncements) {
+    // From announcements folder, go up one level into admin
+    $basePath = '../admin/';
+    $announcementsPath = './';
+    $logoutPath = '../logoutadmin.php';
+    $messagesPath = '../chatting/admin/Messages.php';
 } else {
     // From admin folder
     $basePath = '';
@@ -29,6 +36,8 @@ if ($isFromChatting) {
 
       <a href="<?php echo $basePath; ?>ResidentApprovals.php">Resident Approvals</a>
       <a href="<?php echo $basePath; ?>AttendanceView.php">Attendance</a>
+      <a href="<?php echo $basePath; ?>AttendanceLogsView.php">Attendance Logs</a>
+      <a href="<?php echo $basePath; ?>EmployeeProfiles.php">Employee Profiles</a>
       <a href="<?php echo $announcementsPath; ?>AnnouncementsList.php">Announcements</a>
       <a href="<?php echo $messagesPath; ?>">Messages</a>
       <a href="<?php echo $logoutPath; ?>" class="btn outline small">Logout</a>

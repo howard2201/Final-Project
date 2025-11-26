@@ -7,6 +7,9 @@
 
 session_start();
 
+// Set timezone to Asia/Manila (Philippines)
+date_default_timezone_set('Asia/Manila');
+
 // Set proper headers for API
 header('Content-Type: application/json; charset=utf-8');
 header('X-Content-Type-Options: nosniff');
@@ -34,6 +37,9 @@ try {
 
     // Validate and sanitize input
     $searchDate = isset($_GET['search_date']) ? trim($_GET['search_date']) : '';
+    $fromDate = isset($_GET['from_date']) ? trim($_GET['from_date']) : '';
+    $toDate = isset($_GET['to_date']) ? trim($_GET['to_date']) : '';
+    $empNumber = isset($_GET['emp_number']) ? trim($_GET['emp_number']) : '';
 
     // Validate date format if provided
     if (!empty($searchDate)) {
@@ -58,6 +64,27 @@ try {
             ]);
             exit;
         }
+    }
+
+    // Validate from_date and to_date if provided
+    if (!empty($fromDate) && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $fromDate)) {
+        http_response_code(400);
+        echo json_encode([
+            'success' => false,
+            'message' => 'Invalid from_date format. Expected YYYY-MM-DD.',
+            'data' => []
+        ]);
+        exit;
+    }
+
+    if (!empty($toDate) && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $toDate)) {
+        http_response_code(400);
+        echo json_encode([
+            'success' => false,
+            'message' => 'Invalid to_date format. Expected YYYY-MM-DD.',
+            'data' => []
+        ]);
+        exit;
     }
 
     // Fetch attendance records using stored procedure
@@ -145,6 +172,32 @@ try {
         $filteredRecords = $dateFilteredRecords;
     }
 
+    // Apply additional filters (from_date, to_date, emp_number)
+    if ($fromDate || $toDate || $empNumber) {
+        $additionalFiltered = [];
+        foreach ($filteredRecords as $record) {
+            if (!empty($record['time_in'])) {
+                try {
+                    $recordDateTime = new DateTime($record['time_in']);
+                    $recordDate = $recordDateTime->format('Y-m-d');
+                    $match = true;
+
+                    if ($fromDate && $recordDate < $fromDate) $match = false;
+                    if ($toDate && $recordDate > $toDate) $match = false;
+                    if ($empNumber && stripos($record['name'], $empNumber) === false && stripos($recordDate, $empNumber) === false) $match = false;
+
+                    if ($match) {
+                        $additionalFiltered[] = $record;
+                    }
+                } catch (Exception $e) {
+                    error_log("Additional filtering error: " . $e->getMessage());
+                    continue;
+                }
+            }
+        }
+        $filteredRecords = $additionalFiltered;
+    }
+
     // Build response array with calculated data
     $response = [];
     foreach ($filteredRecords as $record) {
@@ -168,9 +221,18 @@ try {
             $latestTimeOut = (isset($record['latest_time_out']) && !empty($record['latest_time_out'])) ? $record['latest_time_out'] : null;
             $status = (!empty($latestTimeIn) && is_null($latestTimeOut)) ? 'Online' : 'Offline';
 
+            $employeeNumber = isset($record['employee_number']) && !empty($record['employee_number']) 
+                ? htmlspecialchars($record['employee_number'], ENT_QUOTES, 'UTF-8') 
+                : 'N/A';
+            $position = isset($record['position']) && !empty($record['position']) 
+                ? htmlspecialchars($record['position'], ENT_QUOTES, 'UTF-8') 
+                : 'N/A';
+
             $response[] = [
                 'id' => $id,
                 'name' => $name,
+                'employee_number' => $employeeNumber,
+                'position' => $position,
                 'date' => $date,
                 'status' => $status
             ];
@@ -180,14 +242,70 @@ try {
         }
     }
 
+    // Check if full records are requested (for modal details)
+    $fullRecords = [];
+    if (isset($_GET['get_full_records']) && $_GET['get_full_records'] == '1') {
+        // Return full records with all details
+        $stmt = $conn->prepare("CALL getAttendanceForAPI()");
+        $stmt->execute();
+        $fullRecords = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        if (method_exists($stmt, 'closeCursor')) {
+            $stmt->closeCursor();
+        }
+    }
+
+    // Get latest check-in if requested
+    $latestCheckIn = null;
+    if (isset($_GET['get_latest_checkin']) && $_GET['get_latest_checkin'] == '1') {
+        // Get the most recent check-in from today (by time_in, regardless of time_out)
+        // This ensures we catch all new check-ins
+        $stmt = $conn->prepare("
+            SELECT id, name, employee_number, position, time_in, time_out
+            FROM attendance
+            WHERE DATE(time_in) = CURDATE()
+            ORDER BY time_in DESC
+            LIMIT 1
+        ");
+        $stmt->execute();
+        $latestRecord = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (method_exists($stmt, 'closeCursor')) {
+            $stmt->closeCursor();
+        }
+        
+        if ($latestRecord) {
+            $latestCheckIn = [
+                'id' => intval($latestRecord['id']),
+                'name' => htmlspecialchars($latestRecord['name'], ENT_QUOTES, 'UTF-8'),
+                'employee_number' => isset($latestRecord['employee_number']) && !empty($latestRecord['employee_number']) 
+                    ? htmlspecialchars($latestRecord['employee_number'], ENT_QUOTES, 'UTF-8') 
+                    : null,
+                'position' => isset($latestRecord['position']) && !empty($latestRecord['position']) 
+                    ? htmlspecialchars($latestRecord['position'], ENT_QUOTES, 'UTF-8') 
+                    : null,
+                'time_in' => $latestRecord['time_in'],
+                'time_out' => $latestRecord['time_out']
+            ];
+        }
+    }
+
     // Return successful response
     http_response_code(200);
-    echo json_encode([
+    $result = [
         'success' => true,
         'message' => 'Attendance records retrieved successfully',
         'count' => count($response),
         'data' => $response
-    ]);
+    ];
+    
+    if (!empty($fullRecords)) {
+        $result['fullRecords'] = $fullRecords;
+    }
+    
+    if ($latestCheckIn !== null) {
+        $result['latestCheckIn'] = $latestCheckIn;
+    }
+    
+    echo json_encode($result);
 
 } catch (PDOException $e) {
     error_log("Database error in api_attendance.php: " . $e->getMessage());

@@ -104,7 +104,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
                             $residencyFileName
                         ]);
 
-                        $_SESSION['success_message'] = "Your request has been submitted successfully! You can track its status on your dashboard.";
+                        $_SESSION['success_message'] = "Your requested document has been successfully submitted and is currently pending for approval. You can track its status on your dashboard.";
                         header("Location: ../residents/Dashboard.php");
                         exit;
                     } catch (PDOException $e) {
@@ -124,19 +124,11 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
 <meta charset="UTF-8">
 <title>Request Service</title>
 <link rel="stylesheet" href="../css/RequestForm.css">
-<script src="../js/alerts.js"></script>
+<script src="../js/requestAlert.js"></script>
 </head>
 <body>
 
 <?php include '../includes/headerinner.php'; ?>
-
-<?php if(!empty($error)): ?>
-  <div data-error-message="<?php echo htmlspecialchars($error); ?>"></div>
-<?php endif; ?>
-
-<?php if(!empty($success)): ?>
-  <div data-success-message="<?php echo htmlspecialchars($success); ?>"></div>
-<?php endif; ?>
 
 <main class="container request-page">
 <div class="card form-card">
@@ -177,10 +169,34 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
 <div class="hero-actions">
 <!-- Back Button aligned right -->
 <div style="margin-bottom: 2rem; text-align: right;">
-    <a href="../residents/Dashboard.php" class="btn outline">← Back to Dashboard</a>
+    <a href="../residents/Dashboard.php" class="btn">← Back to Dashboard</a>
 </div>
 
 </div>
+
+<!-- Notification container -->
+<div id="notification" class="notification"></div>
+
+<script>
+// Pass PHP variables to JS for notifications
+const errorMessage = <?php echo json_encode($error); ?>;
+const successMessage = <?php echo json_encode($success); ?>;
+document.addEventListener("DOMContentLoaded", function() {
+    const notificationEl = document.getElementById('notification');
+
+    function showNotification(message, type) {
+        notificationEl.textContent = message;
+        notificationEl.className = `notification ${type} show`;
+
+        setTimeout(() => {
+            notificationEl.classList.remove('show');
+        }, 4000);
+    }
+
+    if (errorMessage) showNotification(errorMessage, 'error');
+    if (successMessage) showNotification(successMessage, 'success');
+});
+</script>
 
 <script src="../js/appear.js"></script>
 

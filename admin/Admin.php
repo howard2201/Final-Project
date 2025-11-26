@@ -205,10 +205,10 @@ class Admin {
         }
     }
 
-    public function checkInAttendance($name, $time_in) {
+    public function checkInAttendance($name, $time_in, $employee_number = null, $position = null) {
         try {
-            $stmt = $this->conn->prepare("CALL createAttendanceCheckIn(?, ?)");
-            return $stmt->execute([$name, $time_in]);
+            $stmt = $this->conn->prepare("CALL createAttendanceCheckIn(?, ?, ?, ?)");
+            return $stmt->execute([$name, $time_in, $employee_number, $position]);
         } catch (PDOException $e) {
             error_log("Attendance check-in error: " . $e->getMessage());
             throw new Exception("Unable to record check-in. Please try again.");
@@ -237,6 +237,104 @@ class Admin {
         } catch (PDOException $e) {
             error_log("Get last attendance error: " . $e->getMessage());
             return null;
+        }
+    }
+
+    public function getAttendanceLogs($fromDate = null, $toDate = null, $name = null) {
+        try {
+            $stmt = $this->conn->prepare("CALL getAttendanceLogs(?, ?, ?)");
+            $stmt->execute([$fromDate, $toDate, $name]);
+            $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            if (method_exists($stmt, 'closeCursor')) {
+                $stmt->closeCursor();
+            }
+            return $records;
+        } catch (PDOException $e) {
+            error_log("Get attendance logs error: " . $e->getMessage());
+            // Fallback to getAllAttendanceLogs
+            try {
+                $stmt = $this->conn->prepare("CALL getAllAttendanceLogs()");
+                $stmt->execute();
+                $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                if (method_exists($stmt, 'closeCursor')) {
+                    $stmt->closeCursor();
+                }
+                // Apply filters manually if stored procedure failed
+                if ($fromDate || $toDate || $name) {
+                    $filtered = [];
+                    foreach ($records as $record) {
+                        $recordDate = date('Y-m-d', strtotime($record['time_in']));
+                        $match = true;
+                        if ($fromDate && $recordDate < $fromDate) $match = false;
+                        if ($toDate && $recordDate > $toDate) $match = false;
+                        if ($name && stripos($record['name'], $name) === false) $match = false;
+                        if ($match) $filtered[] = $record;
+                    }
+                    return $filtered;
+                }
+                return $records;
+            } catch (PDOException $e2) {
+                error_log("Fallback attendance logs query error: " . $e2->getMessage());
+                return [];
+            }
+        }
+    }
+
+    public function getAllAttendanceLogs() {
+        try {
+            $stmt = $this->conn->prepare("CALL getAllAttendanceLogs()");
+            $stmt->execute();
+            $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            if (method_exists($stmt, 'closeCursor')) {
+                $stmt->closeCursor();
+            }
+            return $records;
+        } catch (PDOException $e) {
+            error_log("Get all attendance logs error: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    public function archiveOldAttendanceRecords() {
+        try {
+            $stmt = $this->conn->prepare("CALL archiveOldAttendanceRecords()");
+            $stmt->execute();
+            if (method_exists($stmt, 'closeCursor')) {
+                $stmt->closeCursor();
+            }
+            return true;
+        } catch (PDOException $e) {
+            error_log("Archive old attendance records error: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    public function getUniqueEmployees() {
+        try {
+            $stmt = $this->conn->prepare("CALL getUniqueEmployees()");
+            $stmt->execute();
+            $employees = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            if (method_exists($stmt, 'closeCursor')) {
+                $stmt->closeCursor();
+            }
+            return $employees;
+        } catch (PDOException $e) {
+            error_log("Get unique employees error: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    public function updateEmployeeProfile($name, $newName, $employeeNumber, $position) {
+        try {
+            $stmt = $this->conn->prepare("CALL updateEmployeeProfile(?, ?, ?, ?)");
+            $result = $stmt->execute([$name, $newName, $employeeNumber, $position]);
+            if (method_exists($stmt, 'closeCursor')) {
+                $stmt->closeCursor();
+            }
+            return $result;
+        } catch (PDOException $e) {
+            error_log("Update employee profile error: " . $e->getMessage());
+            throw new Exception("Unable to update employee profile. Please try again.");
         }
     }
 }

@@ -11,6 +11,9 @@ class Database {
     // Private constructor to prevent direct instantiation
     private function __construct() {
         try {
+            // Set PHP timezone to Asia/Manila (Philippines)
+            date_default_timezone_set('Asia/Manila');
+            
             $this->conn = new PDO(
                 "mysql:host=" . $this->host . ";dbname=" . $this->db_name,
                 $this->username,
@@ -18,6 +21,8 @@ class Database {
             );
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $this->conn->exec("set names utf8");
+            // Set MySQL session timezone to Asia/Manila (UTC+8)
+            $this->conn->exec("SET time_zone = '+08:00'");
         } catch(PDOException $e) {
             // User-friendly error message
             $this->displayError(

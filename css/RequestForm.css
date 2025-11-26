@@ -175,4 +175,58 @@ a {
     width: 100%;
   }
 }
+/* ========================================
+   BUTTONS
+   ======================================== */
+.btn {
+  background-color: var(--primary-green);
+  color: var(--white);
+  padding: 0.6rem 1.2rem;
+  border-radius: 5px;
+  font-weight: 600;
+  transition: background-color var(--transition-speed), transform var(--transition-speed);
+  display: inline-block;
+  text-align: center;
+  margin-right: 2rem;
+}
 
+.btn:hover {
+  background-color: var(--btn-hover);
+  transform: translateY(-2px);
+}
+/* ========================================
+   NOTIFICATIONS
+   ======================================== */
+.notification {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.9);
+  min-width: 300px;
+  max-width: 90%;
+  padding: 1rem 1.5rem;
+  border-radius: 2px;
+  font-weight: 600;
+  text-align: center;
+  color: #fff;
+  z-index: 9999;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  border: 3px solid #2c7a2c;
+}
+
+.notification.show {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.notification.success {
+  background-color: var(--primary-green);
+}
+
+.notification.error {
+  background-color: #d32f2f;
+}

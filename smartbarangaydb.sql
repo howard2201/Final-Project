@@ -9,7 +9,7 @@
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
-SET time_zone = "+00:00";
+SET time_zone = "+08:00";
 
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -45,14 +45,28 @@ CREATE TABLE `admins` (
 CREATE TABLE attendance (
   id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
+  employee_number VARCHAR(5) DEFAULT NULL,
+  position VARCHAR(255) DEFAULT NULL,
   time_in DATETIME DEFAULT NULL,
-  time_out DATETIME DEFAULT NULL
+  time_out DATETIME DEFAULT NULL,
+  INDEX `idx_employee_number` (`employee_number`),
+  INDEX `idx_name` (`name`)
 );
 
-INSERT INTO attendance (name, time_in, time_out) VALUES
-('John Doe', '2025-11-07 08:00:00', '2025-11-07 17:00:00'),
-('Jane Smith', '2025-11-07 09:30:00', '2025-11-07 18:30:00'),
-('Bob Johnson', '2025-11-07 10:15:00', '2025-11-07 19:15:00');
+-- attendance_logs table for storing past attendance records
+CREATE TABLE IF NOT EXISTS `attendance_logs` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `name` VARCHAR(255) NOT NULL,
+  `employee_number` VARCHAR(5) DEFAULT NULL,
+  `position` VARCHAR(255) DEFAULT NULL,
+  `time_in` DATETIME NOT NULL,
+  `time_out` DATETIME NOT NULL,
+  `archived_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX `idx_name` (`name`),
+  INDEX `idx_employee_number` (`employee_number`),
+  INDEX `idx_time_in` (`time_in`),
+  INDEX `idx_time_out` (`time_out`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `admins`
@@ -560,33 +574,52 @@ DELIMITER ;
 DELIMITER $$
 CREATE PROCEDURE `createAttendanceCheckIn` (
     IN p_name VARCHAR(255),
-    IN p_time_in DATETIME
+    IN p_time_in DATETIME,
+    IN p_employee_number VARCHAR(5),
+    IN p_position VARCHAR(255)
 )
 BEGIN
-    INSERT INTO attendance (name, time_in)
-    VALUES (p_name, p_time_in);
+    INSERT INTO attendance (name, time_in, employee_number, position)
+    VALUES (p_name, p_time_in, p_employee_number, p_position);
 END$$
 DELIMITER ;
 
--- Update attendance check-out
+-- Update attendance check-out (with automatic archiving)
 DELIMITER $$
 CREATE PROCEDURE `updateAttendanceCheckOut` (
     IN p_attendance_id INT,
     IN p_time_out DATETIME
 )
 BEGIN
+    DECLARE v_attendance_date DATE;
+    DECLARE v_today DATE;
+    
+    SET v_today = CURDATE();
+    
+    -- Update the attendance record
     UPDATE attendance
     SET time_out = p_time_out
     WHERE id = p_attendance_id;
+    
+    -- Check if the record should be archived
+    SELECT DATE(time_in) INTO v_attendance_date
+    FROM attendance
+    WHERE id = p_attendance_id;
+    
+    -- If the attendance date is not today and time_out is set, archive it
+    IF v_attendance_date < v_today AND p_time_out IS NOT NULL THEN
+        CALL archiveAttendanceToLogs(p_attendance_id);
+    END IF;
 END$$
 DELIMITER ;
 
--- Get all attendance records
+-- Get all attendance records (only current date or ongoing)
 DELIMITER $$
 CREATE PROCEDURE `getAllAttendanceRecords` ()
 BEGIN
-    SELECT id, name, time_in, time_out
+    SELECT id, name, employee_number, position, time_in, time_out
     FROM attendance
+    WHERE DATE(time_in) = CURDATE() OR time_out IS NULL
     ORDER BY id DESC;
 END$$
 DELIMITER ;
@@ -601,13 +634,261 @@ BEGIN
 END$$
 DELIMITER ;
 
--- Get all attendance records for API (used by api_attendance.php)
+-- Get all attendance records for API (only current date or ongoing)
 DELIMITER $$
 CREATE PROCEDURE `getAttendanceForAPI` ()
 BEGIN
-    SELECT id, name, time_in, time_out
+    SELECT id, name, employee_number, position, time_in, time_out
     FROM attendance
+    WHERE DATE(time_in) = CURDATE() OR time_out IS NULL
     ORDER BY id DESC;
+END$$
+DELIMITER ;
+
+-- Procedure to archive completed attendance records to logs
+DELIMITER $$
+CREATE PROCEDURE `archiveAttendanceToLogs` (
+    IN p_attendance_id INT
+)
+BEGIN
+    DECLARE v_name VARCHAR(255);
+    DECLARE v_employee_number VARCHAR(5);
+    DECLARE v_position VARCHAR(255);
+    DECLARE v_time_in DATETIME;
+    DECLARE v_time_out DATETIME;
+    DECLARE v_attendance_date DATE;
+    DECLARE v_today DATE;
+    
+    SET v_today = CURDATE();
+    
+    -- Get the attendance record
+    SELECT name, employee_number, position, time_in, time_out, DATE(time_in)
+    INTO v_name, v_employee_number, v_position, v_time_in, v_time_out, v_attendance_date
+    FROM attendance
+    WHERE id = p_attendance_id AND time_out IS NOT NULL;
+    
+    -- Only archive if time_out is set and the date is not today
+    IF v_time_out IS NOT NULL AND v_attendance_date < v_today THEN
+        -- Insert into logs
+        INSERT INTO attendance_logs (name, employee_number, position, time_in, time_out)
+        VALUES (v_name, v_employee_number, v_position, v_time_in, v_time_out);
+        
+        -- Delete from attendance table
+        DELETE FROM attendance WHERE id = p_attendance_id;
+    END IF;
+END$$
+DELIMITER ;
+
+-- Procedure to archive all old completed records (can be run as maintenance)
+DELIMITER $$
+CREATE PROCEDURE `archiveOldAttendanceRecords` ()
+BEGIN
+    DECLARE done INT DEFAULT FALSE;
+    DECLARE v_id INT;
+    DECLARE v_name VARCHAR(255);
+    DECLARE v_employee_number VARCHAR(5);
+    DECLARE v_position VARCHAR(255);
+    DECLARE v_time_in DATETIME;
+    DECLARE v_time_out DATETIME;
+    DECLARE v_attendance_date DATE;
+    DECLARE v_today DATE;
+    
+    DECLARE cur CURSOR FOR 
+        SELECT id, name, employee_number, position, time_in, time_out, DATE(time_in)
+        FROM attendance
+        WHERE time_out IS NOT NULL AND DATE(time_in) < CURDATE();
+    
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+    
+    SET v_today = CURDATE();
+    
+    OPEN cur;
+    
+    read_loop: LOOP
+        FETCH cur INTO v_id, v_name, v_employee_number, v_position, v_time_in, v_time_out, v_attendance_date;
+        IF done THEN
+            LEAVE read_loop;
+        END IF;
+        
+        -- Insert into logs
+        INSERT INTO attendance_logs (name, employee_number, position, time_in, time_out)
+        VALUES (v_name, v_employee_number, v_position, v_time_in, v_time_out);
+        
+        -- Delete from attendance table
+        DELETE FROM attendance WHERE id = v_id;
+    END LOOP;
+    
+    CLOSE cur;
+END$$
+DELIMITER ;
+
+-- Procedure to get attendance logs with filters
+DELIMITER $$
+CREATE PROCEDURE `getAttendanceLogs` (
+    IN p_from_date DATE,
+    IN p_to_date DATE,
+    IN p_name VARCHAR(255)
+)
+BEGIN
+    SELECT id, name, employee_number, position, time_in, time_out, archived_at
+    FROM attendance_logs
+    WHERE (p_from_date IS NULL OR DATE(time_in) >= p_from_date)
+      AND (p_to_date IS NULL OR DATE(time_in) <= p_to_date)
+      AND (p_name IS NULL OR name LIKE CONCAT('%', p_name, '%'))
+    ORDER BY time_in DESC;
+END$$
+DELIMITER ;
+
+-- Procedure to get all attendance logs
+DELIMITER $$
+CREATE PROCEDURE `getAllAttendanceLogs` ()
+BEGIN
+    SELECT id, name, employee_number, position, time_in, time_out, archived_at
+    FROM attendance_logs
+    ORDER BY time_in DESC;
+END$$
+DELIMITER ;
+
+-- Procedure to get employee info from logs by name (for consistent employee_number)
+DELIMITER $$
+CREATE PROCEDURE `getEmployeeInfoFromLogs` (
+    IN p_name VARCHAR(255)
+)
+BEGIN
+    SELECT employee_number, position
+    FROM attendance_logs
+    WHERE name = p_name
+      AND employee_number IS NOT NULL
+      AND employee_number != ''
+    ORDER BY time_in DESC
+    LIMIT 1;
+END$$
+DELIMITER ;
+
+-- Procedure to get unique employees from attendance (for profile management)
+DELIMITER $$
+CREATE PROCEDURE `getUniqueEmployees` ()
+BEGIN
+    -- Get unique employees from both attendance and attendance_logs
+    -- Combine and get the most recent employee_number and position for each employee
+    SELECT 
+        name,
+        MAX(employee_number) as employee_number,
+        MAX(position) as position,
+        MAX(latest_time_in) as latest_time_in,
+        SUM(total_records) as total_records
+    FROM (
+        SELECT 
+            name,
+            employee_number,
+            position,
+            MAX(time_in) as latest_time_in,
+            COUNT(*) as total_records
+        FROM attendance
+        GROUP BY name, employee_number, position
+        
+        UNION ALL
+        
+        SELECT 
+            name,
+            employee_number,
+            position,
+            MAX(time_in) as latest_time_in,
+            COUNT(*) as total_records
+        FROM attendance_logs
+        GROUP BY name, employee_number, position
+    ) AS combined
+    GROUP BY name
+    ORDER BY name ASC;
+END$$
+DELIMITER ;
+
+-- Procedure to update employee profile (updates all records for that employee)
+DELIMITER $$
+CREATE PROCEDURE `updateEmployeeProfile` (
+    IN p_name VARCHAR(255),
+    IN p_new_name VARCHAR(255),
+    IN p_employee_number VARCHAR(5),
+    IN p_position VARCHAR(255)
+)
+BEGIN
+    -- Update attendance table
+    UPDATE attendance
+    SET name = p_new_name,
+        employee_number = p_employee_number,
+        position = p_position
+    WHERE name = p_name;
+    
+    -- Update attendance_logs table
+    UPDATE attendance_logs
+    SET name = p_new_name,
+        employee_number = p_employee_number,
+        position = p_position
+    WHERE name = p_name;
+END$$
+DELIMITER ;
+
+-- Procedure to generate and assign a unique 5-digit employee number
+DELIMITER $$
+CREATE PROCEDURE `generateUniqueEmployeeNumber` (
+    IN p_name VARCHAR(255),
+    OUT p_employee_number VARCHAR(5)
+)
+BEGIN
+    DECLARE v_max_num INT DEFAULT 0;
+    DECLARE v_new_num INT;
+    DECLARE v_exists INT DEFAULT 1;
+    DECLARE v_attempts INT DEFAULT 0;
+    
+    -- Check if employee already has a number in attendance or logs
+    SELECT employee_number INTO p_employee_number
+    FROM attendance
+    WHERE name = p_name AND employee_number IS NOT NULL AND employee_number != ''
+    LIMIT 1;
+    
+    IF p_employee_number IS NULL OR p_employee_number = '' THEN
+        SELECT employee_number INTO p_employee_number
+        FROM attendance_logs
+        WHERE name = p_name AND employee_number IS NOT NULL AND employee_number != ''
+        ORDER BY time_in DESC
+        LIMIT 1;
+    END IF;
+    
+    -- If still no number found, generate a new one
+    IF p_employee_number IS NULL OR p_employee_number = '' THEN
+        -- Get the highest employee number (as integer) from both tables
+        SELECT COALESCE(MAX(CAST(employee_number AS UNSIGNED)), 0) INTO v_max_num
+        FROM (
+            SELECT employee_number FROM attendance WHERE employee_number IS NOT NULL AND employee_number != '' AND employee_number REGEXP '^[0-9]{5}$'
+            UNION ALL
+            SELECT employee_number FROM attendance_logs WHERE employee_number IS NOT NULL AND employee_number != '' AND employee_number REGEXP '^[0-9]{5}$'
+        ) AS combined;
+        
+        -- Generate next number (start from 10000 if no numbers exist)
+        SET v_new_num = GREATEST(10000, v_max_num + 1);
+        
+        -- Ensure it's within 5-digit range (10000-99999)
+        IF v_new_num > 99999 THEN
+            -- Find a gap in the sequence
+            SET v_new_num = 10000;
+            WHILE v_exists > 0 AND v_attempts < 90000 DO
+                SELECT COUNT(*) INTO v_exists
+                FROM (
+                    SELECT employee_number FROM attendance WHERE employee_number = LPAD(v_new_num, 5, '0')
+                    UNION ALL
+                    SELECT employee_number FROM attendance_logs WHERE employee_number = LPAD(v_new_num, 5, '0')
+                ) AS combined;
+                
+                IF v_exists > 0 THEN
+                    SET v_new_num = v_new_num + 1;
+                    SET v_attempts = v_attempts + 1;
+                END IF;
+            END WHILE;
+        END IF;
+        
+        -- Format as 5-digit string
+        SET p_employee_number = LPAD(v_new_num, 5, '0');
+    END IF;
 END$$
 DELIMITER ;
 
@@ -966,6 +1247,21 @@ BEGIN
     WHERE approval_status = 'Rejected'
     AND rejection_date IS NOT NULL
     AND rejection_date < (NOW() - INTERVAL 10 DAY);
+END$$
+DELIMITER ;
+
+-- Automatic attendance archiving event: archives old attendance records daily
+-- This event runs every day at 1:00 AM to move completed attendance records
+-- from previous days to the attendance_logs table
+-- NOTE: MySQL event scheduler must be enabled (SET GLOBAL event_scheduler = ON) for this to run.
+DELIMITER $$
+CREATE EVENT IF NOT EXISTS `archive_attendance_daily`
+ON SCHEDULE EVERY 1 DAY
+STARTS CURRENT_DATE + INTERVAL 1 DAY + INTERVAL 1 HOUR
+COMMENT 'Archive completed attendance records from previous days to attendance_logs'
+DO
+BEGIN
+    CALL archiveOldAttendanceRecords();
 END$$
 DELIMITER ;
 

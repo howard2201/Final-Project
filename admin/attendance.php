@@ -6,6 +6,9 @@
 
 session_start();
 
+// Set timezone to Asia/Manila (Philippines)
+date_default_timezone_set('Asia/Manila');
+
 // Set proper headers
 header('Content-Type: text/plain; charset=utf-8');
 header('Cache-Control: no-cache, no-store, must-revalidate');
@@ -25,7 +28,92 @@ try {
         exit;
     }
 
-    // Validate request method
+    // Handle employee number backfill request (GET request with special parameter)
+    if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['backfill_employee_numbers']) && $_GET['backfill_employee_numbers'] === '1') {
+        try {
+            // Get all unique names from attendance table with NULL employee_number
+            $stmt = $conn->prepare("
+                SELECT DISTINCT name 
+                FROM attendance 
+                WHERE (employee_number IS NULL OR employee_number = '')
+                ORDER BY name
+            ");
+            $stmt->execute();
+            $names = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            // Also check attendance_logs
+            $logStmt = $conn->prepare("
+                SELECT DISTINCT name 
+                FROM attendance_logs 
+                WHERE (employee_number IS NULL OR employee_number = '')
+                ORDER BY name
+            ");
+            $logStmt->execute();
+            $logNames = $logStmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            // Combine and get unique names
+            $allNames = [];
+            foreach ($names as $nameRow) {
+                $allNames[$nameRow['name']] = true;
+            }
+            foreach ($logNames as $nameRow) {
+                $allNames[$nameRow['name']] = true;
+            }
+            
+            $count = 0;
+            foreach (array_keys($allNames) as $name) {
+                // Generate unique employee number
+                $genStmt = $conn->prepare("CALL generateUniqueEmployeeNumber(?, @emp_num)");
+                $genStmt->execute([$name]);
+                $genStmt->closeCursor();
+                
+                // Get the generated employee number
+                $resultStmt = $conn->query("SELECT @emp_num as employee_number");
+                $result = $resultStmt->fetch(PDO::FETCH_ASSOC);
+                
+                if ($result && isset($result['employee_number']) && !empty($result['employee_number'])) {
+                    $employeeNumber = $result['employee_number'];
+                    
+                    // Update all attendance records for this name
+                    $updateStmt = $conn->prepare("
+                        UPDATE attendance 
+                        SET employee_number = ? 
+                        WHERE name = ? AND (employee_number IS NULL OR employee_number = '')
+                    ");
+                    $updateStmt->execute([$employeeNumber, $name]);
+                    
+                    // Update all attendance_logs records for this name
+                    $updateLogsStmt = $conn->prepare("
+                        UPDATE attendance_logs 
+                        SET employee_number = ? 
+                        WHERE name = ? AND (employee_number IS NULL OR employee_number = '')
+                    ");
+                    $updateLogsStmt->execute([$employeeNumber, $name]);
+                    
+                    $count++;
+                }
+            }
+            
+            header('Content-Type: application/json');
+            echo json_encode([
+                'success' => true,
+                'message' => "Assigned employee numbers to {$count} employees.",
+                'count' => $count
+            ]);
+            exit;
+        } catch (Exception $e) {
+            error_log("Employee number backfill error: " . $e->getMessage());
+            header('Content-Type: application/json');
+            http_response_code(500);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Error assigning employee numbers: ' . $e->getMessage()
+            ]);
+            exit;
+        }
+    }
+
+    // Validate request method for normal attendance operations
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         http_response_code(405);
         echo "Method Not Allowed";
@@ -87,6 +175,81 @@ try {
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         $stmt->closeCursor();
 
+        // Get employee_number and position from last record if available
+        $employeeNumber = null;
+        $position = null;
+        if ($row && isset($row['employee_number']) && !empty($row['employee_number'])) {
+            $employeeNumber = $row['employee_number'];
+        }
+        if ($row && isset($row['position']) && !empty($row['position'])) {
+            $position = $row['position'];
+        }
+
+        // If employee_number not found in current attendance, check attendance_logs
+        if (empty($employeeNumber)) {
+            try {
+                $logStmt = $conn->prepare("CALL getEmployeeInfoFromLogs(?)");
+                if ($logStmt !== false) {
+                    $logStmt->execute([$name]);
+                    $logRow = $logStmt->fetch(PDO::FETCH_ASSOC);
+                    $logStmt->closeCursor();
+                    
+                    if ($logRow) {
+                        if (isset($logRow['employee_number']) && !empty($logRow['employee_number'])) {
+                            $employeeNumber = $logRow['employee_number'];
+                        }
+                        if (isset($logRow['position']) && !empty($logRow['position'])) {
+                            $position = $logRow['position'];
+                        }
+                    }
+                }
+            } catch (Exception $e) {
+                // Log error but don't fail the check-in if logs lookup fails
+                error_log("Error fetching employee info from logs: " . $e->getMessage());
+            }
+        }
+
+        // If still no employee_number, generate a unique one
+        if (empty($employeeNumber)) {
+            try {
+                $genStmt = $conn->prepare("CALL generateUniqueEmployeeNumber(?, @emp_num)");
+                if ($genStmt !== false) {
+                    $genStmt->execute([$name]);
+                    $genStmt->closeCursor();
+                    
+                    // Get the generated employee number
+                    $resultStmt = $conn->query("SELECT @emp_num as employee_number");
+                    $result = $resultStmt->fetch(PDO::FETCH_ASSOC);
+                    if ($result && isset($result['employee_number']) && !empty($result['employee_number'])) {
+                        $employeeNumber = $result['employee_number'];
+                        
+                        // Update all existing records for this person with the new employee number
+                        try {
+                            $updateStmt = $conn->prepare("
+                                UPDATE attendance 
+                                SET employee_number = ? 
+                                WHERE name = ? AND (employee_number IS NULL OR employee_number = '')
+                            ");
+                            $updateStmt->execute([$employeeNumber, $name]);
+                            
+                            $updateLogsStmt = $conn->prepare("
+                                UPDATE attendance_logs 
+                                SET employee_number = ? 
+                                WHERE name = ? AND (employee_number IS NULL OR employee_number = '')
+                            ");
+                            $updateLogsStmt->execute([$employeeNumber, $name]);
+                        } catch (Exception $e) {
+                            // Log but don't fail - the new record will still have the employee number
+                            error_log("Error updating existing records with employee number: " . $e->getMessage());
+                        }
+                    }
+                }
+            } catch (Exception $e) {
+                // Log error but don't fail the check-in if generation fails
+                error_log("Error generating employee number: " . $e->getMessage());
+            }
+        }
+
         if ($row) {
             // Validate the row has required fields
             // Use array_key_exists instead of isset because time_out can be NULL
@@ -129,7 +292,7 @@ try {
                 }
             } else {
                 // New Check-In
-                $insert = $conn->prepare("CALL createAttendanceCheckIn(?, ?)");
+                $insert = $conn->prepare("CALL createAttendanceCheckIn(?, ?, ?, ?)");
                 
                 if ($insert === false) {
                     $errorInfo = $conn->errorInfo();
@@ -137,7 +300,7 @@ try {
                     throw new Exception("Failed to prepare checkin statement: " . ($errorInfo[2] ?? 'Unknown error'));
                 }
 
-                $success = $insert->execute([$name, $now]);
+                $success = $insert->execute([$name, $now, $employeeNumber, $position]);
                 $insert->closeCursor();
                 
                 if ($success) {
@@ -151,7 +314,7 @@ try {
             }
         } else {
             // First Check-In
-            $insert = $conn->prepare("CALL createAttendanceCheckIn(?, ?)");
+            $insert = $conn->prepare("CALL createAttendanceCheckIn(?, ?, ?, ?)");
             
             if ($insert === false) {
                 $errorInfo = $conn->errorInfo();
@@ -159,7 +322,7 @@ try {
                 throw new Exception("Failed to prepare checkin statement: " . ($errorInfo[2] ?? 'Unknown error'));
             }
 
-            $success = $insert->execute([$name, $now]);
+            $success = $insert->execute([$name, $now, $employeeNumber, $position]);
             $insert->closeCursor();
             
             if ($success) {

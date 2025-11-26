@@ -98,7 +98,12 @@ class Resident {
                 $smsService = new SMSService();
                 $smsService->sendPasswordResetCode($result['phone_number'], $code);
 
-                return ['token' => $resetToken, 'username' => $username];
+                return [
+                    'token' => $resetToken,
+                    'username' => $username,
+                    'otp_code' => $smsService->isProduction() ? null : $code,
+                    'mode' => $smsService->getMode()
+                ];
             }
 
             return false;
@@ -117,6 +122,35 @@ class Resident {
             return $result ? true : false;
         } catch (PDOException $e) {
             error_log("Code verification error: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    public function resendPasswordResetCode($username) {
+        try {
+            $stmt = $this->conn->prepare("CALL getResidentByUsername(?)");
+            $stmt->execute([$username]);
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            $stmt->closeCursor();
+
+            if (!$user || empty($user['phone_number'])) {
+                return false;
+            }
+
+            $code = SMSService::generateCode();
+            $stmt = $this->conn->prepare("CALL storeVerificationCodeResident(?, ?)");
+            $stmt->execute([$username, $code]);
+            $stmt->closeCursor();
+
+            $smsService = new SMSService();
+            $smsService->sendPasswordResetCode($user['phone_number'], $code);
+
+            return [
+                'otp_code' => $smsService->isProduction() ? null : $code,
+                'mode' => $smsService->getMode()
+            ];
+        } catch (PDOException $e) {
+            error_log("Resend password reset code error: " . $e->getMessage());
             return false;
         }
     }

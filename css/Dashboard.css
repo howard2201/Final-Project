@@ -289,4 +289,92 @@ a {
     gap: 0.8rem;
   }
 }
+/* ========================================
+   BUTTONS
+   ======================================== */
+.btn {
+  background-color: var(--primary-green);
+  color: var(--white);
+  padding: 0.6rem 1.2rem;
+  border-radius: 5px;
+  font-weight: 600;
+  transition: background-color var(--transition-speed), transform var(--transition-speed);
+  display: inline-block;
+  text-align: center;
+}
 
+.btn:hover {
+  background-color: var(--btn-hover);
+  transform: translateY(-2px);
+}
+/* ========================================
+   CUSTOM ALERTS (Centered Success/Error/Info/Warning)
+   ======================================== */
+.custom-alert {
+  position: fixed;             /* Stay on screen */
+  top: 50%;                    /* Vertical center */
+  left: 50%;                   /* Horizontal center */
+  transform: translate(-50%, -50%); /* Perfect centering */
+  min-width: 300px;
+  max-width: 90%;
+  padding: 15px 20px;
+  border-radius: 2px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  z-index: 9999;               /* On top of everything */
+  opacity: 0;                  /* Start hidden */
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  font-family: "Inter", system-ui, Arial, sans-serif;
+}
+
+/* Animate in */
+.custom-alert.show {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+/* Alert types */
+.custom-alert-success {
+  background-color: var(--primary-green);
+  color: var(--white);
+  border: 2px solid #1f5d1f; /* Darker green border */
+}
+
+.custom-alert-error {
+  background-color: #d32f2f; /* red */
+  color: #fff;
+  border: 2px solid #a62828;
+}
+
+.custom-alert-info {
+  background-color: #1976d2; /* blue */
+  color: #fff;
+  border: 2px solid #145a9c;
+}
+
+.custom-alert-warning {
+  background-color: #ff9800; /* orange */
+  color: #fff;
+  border: 2px solid #cc7a00;
+}
+
+/* Header & close button */
+.custom-alert-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.custom-alert-close {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.custom-alert-body {
+  font-size: 14px;
+  line-height: 1.4;
+}
+ 
